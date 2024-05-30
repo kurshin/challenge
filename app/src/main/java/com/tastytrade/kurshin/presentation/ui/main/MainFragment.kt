@@ -1,6 +1,7 @@
 package com.tastytrade.kurshin.presentation.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,20 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.chart.observe(viewLifecycleOwner) {
+            Log.i("1111", "chart = ${it}")
+        }
 
+        viewModel.quote.observe(viewLifecycleOwner) {
+            Log.i("1111", "quote = ${it}")
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) {
+            Log.i("1111", "error = $it")
+        }
+
+        viewModel.getChartData("aapl")
+        viewModel.getSymbolData("aapl")
     }
 
     override fun onDestroyView() {

@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TastyTraade"
+rootProject.name = "TastyTrade"
 include(":app")
