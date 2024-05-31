@@ -10,5 +10,8 @@
     <string name="add_watchlist">Add Watchlist</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
+    <string name="save">Save</string>
     <string name="can_not_be_blank">Can not be empty</string>
+    <string name="delete">Delete</string>
+    <string name="delete_watchlist_confirmation">Would you like to delete watchlist `%s`?</string>
 </resources>

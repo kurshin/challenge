@@ -3,6 +3,7 @@ package com.tastytrade.kurshin.presentation.ui.main.watchlist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.RadioButton
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
@@ -50,6 +51,8 @@ class SelectWatchListAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val checkBoxWatchList: RadioButton = itemView.findViewById(R.id.cbWatchlistItem)
+        private val editButton: ImageButton = itemView.findViewById(R.id.btnEditList)
+        private val deleteButton: ImageButton = itemView.findViewById(R.id.btnDelete)
 
         fun bind(watchList: WatchList, isSelected: Boolean) {
             checkBoxWatchList.text = watchList.name
@@ -65,6 +68,16 @@ class SelectWatchListAdapter(
                 notifyItemChanged(adapterPosition)
 
                 dismissAction.invoke()
+            }
+
+            editButton.setOnClickListener {
+                dismissAction.invoke()
+                itemView.context.showEditWatchlistDialog(viewModel, watchList)
+            }
+
+            deleteButton.setOnClickListener {
+                dismissAction.invoke()
+                itemView.context.showDeleteWatchlistDialog(viewModel, watchList)
             }
         }
     }

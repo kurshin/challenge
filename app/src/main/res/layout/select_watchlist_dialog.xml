@@ -21,17 +21,6 @@
         android:scrollbars="vertical" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnEditList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_16dp"
-        android:backgroundTint="?attr/colorPrimary"
-        android:text="@string/edit_list"
-        android:visibility="gone"
-        android:drawableEnd="@drawable/baseline_edit_note_24"
-        android:textColor="@android:color/white" />
-
-    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnNewList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

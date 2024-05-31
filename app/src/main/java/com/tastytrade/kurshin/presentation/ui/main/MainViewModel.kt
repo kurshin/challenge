@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.tastytrade.kurshin.data.persisted.WatchListRepository
 import com.tastytrade.kurshin.data.remote.StockRepository
 import com.tastytrade.kurshin.data.remote.RetrofitHolder
-import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
 import com.tastytrade.kurshin.domain.Quote
 import com.tastytrade.kurshin.domain.WatchList
@@ -30,24 +29,29 @@ class MainViewModel(
     private val _quote = MutableLiveData<Quote>()
     val quote: LiveData<Quote> get() = _quote
 
-    private val _chart = MutableLiveData<List<Chart>>()
-    val chart: LiveData<List<Chart>> get() = _chart
-
     internal val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
 
     val watchList: List<WatchList> get() = watchListRepo.watchList
-    fun addWatchList(newList: WatchList) {
-        watchListRepo.addWatchlist(newList)
+    fun addWatchList(watchList: WatchList) {
+        watchListRepo.addWatchlist(watchList)
+        currentWatchlist.postValue(watchList)
+    }
+
+    fun updateWatchList(watchList: WatchList) {
+        currentWatchlist.postValue(watchList)
+        watchListRepo.updateWatchlist(watchList)
+    }
+
+    fun deleteWatchList(watchList: WatchList) {
+        if (watchList.name == currentWatchlist.value?.name) {
+            currentWatchlist.postValue(DEFAULT_WATCHLIST)
+        }
+        watchListRepo.removeWatchlist(watchList)
     }
 
     fun getSymbolData(symbol: String) = launch(errorHandler) {
         val result = stockRepo.fetchQuote(symbol)
         _quote.postValue(result)
-    }
-
-    fun getChartData(symbol: String) = launch(errorHandler) {
-        val result = stockRepo.fetchChart(symbol)
-        _chart.postValue(result)
     }
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->

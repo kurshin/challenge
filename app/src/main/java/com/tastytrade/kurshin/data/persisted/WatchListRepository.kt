@@ -9,4 +9,11 @@ class WatchListRepository {
     fun addWatchlist(newList: WatchList) {
         watchList.add(newList)
     }
+
+    fun updateWatchlist(newList: WatchList) {
+    }
+
+    fun removeWatchlist(newList: WatchList) {
+        watchList.remove(newList)
+    }
 }
