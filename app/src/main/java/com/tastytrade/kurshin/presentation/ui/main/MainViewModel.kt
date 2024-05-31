@@ -9,6 +9,7 @@ import com.tastytrade.kurshin.data.persisted.WatchListRepository
 import com.tastytrade.kurshin.data.remote.StockRepository
 import com.tastytrade.kurshin.data.remote.RetrofitHolder
 import com.tastytrade.kurshin.domain.Chart
+import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
 import com.tastytrade.kurshin.domain.Quote
 import com.tastytrade.kurshin.domain.WatchList
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -31,6 +32,8 @@ class MainViewModel(
 
     private val _chart = MutableLiveData<List<Chart>>()
     val chart: LiveData<List<Chart>> get() = _chart
+
+    internal val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
 
     val watchList: List<WatchList> get() = watchListRepo.watchList
     fun addWatchList(newList: WatchList) {

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentMainBinding
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
 
@@ -35,6 +36,10 @@ class MainFragment : Fragment() {
 
         viewModel.error.observe(viewLifecycleOwner) {
             Log.i("1111", "error: $it")
+        }
+
+        viewModel.currentWatchlist.observe(viewLifecycleOwner) {
+            binding.tvSelectedWatchList.text = it.name.ifEmpty { getString(R.string.all_symbols) }
         }
 
         binding.etSearch.addTextChangedListener {

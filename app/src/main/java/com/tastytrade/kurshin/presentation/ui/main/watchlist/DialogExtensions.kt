@@ -20,18 +20,24 @@ fun Context.showAddWatchlistDialog(userViewModel: MainViewModel) {
         }
     }
 
-    AlertDialog.Builder(this)
+    val dialog = AlertDialog.Builder(this)
         .setView(FrameLayout(this).apply { addView(editTextWatchlistName) })
-        .setPositiveButton(R.string.add) { dialog, _ ->
-            val watchlistName = editTextWatchlistName.text.toString()
-            if (watchlistName.isNotBlank()) {
-                userViewModel.addWatchList(WatchList(watchlistName))
-            }
-            dialog.dismiss()
-        }
+        .setPositiveButton(R.string.create, null)
         .setNegativeButton(R.string.cancel) { dialog, _ ->
             dialog.dismiss()
         }
         .create()
-        .show()
+    dialog.show()
+
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        val watchlistName = editTextWatchlistName.text.toString()
+        if (watchlistName.isNotEmpty()) {
+            val watchList = WatchList(watchlistName)
+            userViewModel.addWatchList(watchList)
+            userViewModel.currentWatchlist.postValue(watchList)
+            dialog.dismiss()
+        } else {
+            editTextWatchlistName.error = getString(R.string.can_not_be_blank)
+        }
+    }
 }

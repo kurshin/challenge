@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RadioButton
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +21,7 @@ class SelectWatchListDialog(private val context: Context, private val viewModel:
     private val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
     private val newWatchlistButton: Button = view.findViewById(R.id.btnNewList)
     private val editWatchListsButton: Button = view.findViewById(R.id.btnEditList)
-    private val noWatchlistsSelector: Button = view.findViewById(R.id.cbNoWatchlists)
+    private val checkBoxAllSymbols: RadioButton = view.findViewById(R.id.cbNoWatchlists)
 
     init {
         dialog.setContentView(view)
@@ -28,10 +29,11 @@ class SelectWatchListDialog(private val context: Context, private val viewModel:
         recyclerView.layoutManager = LinearLayoutManager(context)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
+        recyclerView.adapter = SelectWatchListAdapter(viewModel, checkBoxAllSymbols) {
+            dialog.dismiss()
+        }
         val watchList = viewModel.watchList
-        recyclerView.adapter = SelectWatchListAdapter(watchList)
         editWatchListsButton.isVisible = watchList.isNotEmpty()
-        noWatchlistsSelector.isEnabled = watchList.isNotEmpty()
 
         newWatchlistButton.setOnClickListener {
             context.showAddWatchlistDialog(viewModel)

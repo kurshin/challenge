@@ -4,10 +4,11 @@
     <string name="symbol">Symbol</string>
     <string name="new_list">New Watchlist</string>
     <string name="edit_list">Edit Watchlists</string>
-    <string name="all_symbols">No watchlist (all symbols)</string>
+    <string name="all_symbols">All Symbols</string>
     <string name="arrow_down">▼</string>
     <string name="enter_watchlist_name">Enter watchlist name</string>
     <string name="add_watchlist">Add Watchlist</string>
     <string name="cancel">Cancel</string>
-    <string name="add">Add</string>
+    <string name="create">Create</string>
+    <string name="can_not_be_blank">Can not be empty</string>
 </resources>
