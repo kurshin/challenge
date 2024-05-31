@@ -50,7 +50,7 @@ class MainFragment : Fragment() {
         }
 
         binding.clWatchListSelector.setOnClickListener{
-            val selectWatchListDialog = SelectWatchListDialog(requireActivity(), viewModel.wishList)
+            val selectWatchListDialog = SelectWatchListDialog(requireActivity(), viewModel)
             selectWatchListDialog.show()
         }
     }

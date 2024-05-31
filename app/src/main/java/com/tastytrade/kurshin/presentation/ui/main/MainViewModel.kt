@@ -10,6 +10,7 @@ import com.tastytrade.kurshin.data.remote.StockRepository
 import com.tastytrade.kurshin.data.remote.RetrofitHolder
 import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.Quote
+import com.tastytrade.kurshin.domain.WatchList
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -19,7 +20,7 @@ import kotlin.coroutines.CoroutineContext
 
 class MainViewModel(
     private val stockRepo: StockRepository,
-    private val wishListRepo: WatchListRepository
+    private val watchListRepo: WatchListRepository
 ) : ViewModel() {
 
     private val _error = MutableLiveData<String>()
@@ -31,7 +32,10 @@ class MainViewModel(
     private val _chart = MutableLiveData<List<Chart>>()
     val chart: LiveData<List<Chart>> get() = _chart
 
-    val wishList = wishListRepo.watchList
+    val watchList: List<WatchList> get() = watchListRepo.watchList
+    fun addWatchList(newList: WatchList) {
+        watchListRepo.addWatchlist(newList)
+    }
 
     fun getSymbolData(symbol: String) = launch(errorHandler) {
         val result = stockRepo.fetchQuote(symbol)
