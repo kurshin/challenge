@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TastyTrade</string>
+    <string name="done">Done</string>
+    <string name="symbol">Symbol</string>
+    <string name="new_list">New WatchList</string>
+    <string name="edit_list">Edit WatchLists</string>
+    <string name="all_symbols">No watchlist (all symbols)</string>
+    <string name="arrow_down">▼</string>
 </resources>

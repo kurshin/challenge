@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.tastytrade.kurshin.data.dto.chart.ChartDto
-import com.tastytrade.kurshin.data.dto.quote.QuoteDto
+import com.tastytrade.kurshin.data.persisted.WatchListRepository
 import com.tastytrade.kurshin.data.remote.StockRepository
 import com.tastytrade.kurshin.data.remote.RetrofitHolder
 import com.tastytrade.kurshin.domain.Chart
@@ -18,7 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class MainViewModel(private val repository: StockRepository) : ViewModel() {
+class MainViewModel(
+    private val stockRepo: StockRepository,
+    private val wishListRepo: WatchListRepository
+) : ViewModel() {
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
@@ -29,13 +31,15 @@ class MainViewModel(private val repository: StockRepository) : ViewModel() {
     private val _chart = MutableLiveData<List<Chart>>()
     val chart: LiveData<List<Chart>> get() = _chart
 
-    fun getSymbolData(symbol: String) = launch (errorHandler) {
-        val result = repository.fetchQuote(symbol)
+    val wishList = wishListRepo.watchList
+
+    fun getSymbolData(symbol: String) = launch(errorHandler) {
+        val result = stockRepo.fetchQuote(symbol)
         _quote.postValue(result)
     }
 
-    fun getChartData(symbol: String) = launch (errorHandler) {
-        val result = repository.fetchChart(symbol)
+    fun getChartData(symbol: String) = launch(errorHandler) {
+        val result = stockRepo.fetchChart(symbol)
         _chart.postValue(result)
     }
 
@@ -46,7 +50,7 @@ class MainViewModel(private val repository: StockRepository) : ViewModel() {
 
 object ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MainViewModel(StockRepository(RetrofitHolder.stockService)) as T
+        return MainViewModel(StockRepository(RetrofitHolder.stockService), WatchListRepository()) as T
     }
 }
 

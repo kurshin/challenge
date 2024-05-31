@@ -1,6 +1,5 @@
 package com.tastytrade.kurshin.data.remote
 
-import com.tastytrade.kurshin.data.dto.chart.ChartDto
 import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.Quote
 import kotlinx.coroutines.Dispatchers
