@@ -5,5 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "watchlists")
 data class WatchListEntity(
-    @PrimaryKey val name: String
+    @PrimaryKey(autoGenerate = true)
+    val id: Long,
+    val name: String
 )

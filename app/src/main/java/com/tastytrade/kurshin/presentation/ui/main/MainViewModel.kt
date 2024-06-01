@@ -28,7 +28,9 @@ class MainViewModel(
     private val symbolRepo: ISymbolRepository
 ) : ViewModel() {
 
-    internal val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
+    val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
+    var selectedSymbols = mutableListOf<Symbol>()
+
     val error = MutableLiveData<String>()
     val quote = MutableLiveData<Quote>()
     val symbols = MutableLiveData<List<Symbol>>()
@@ -43,7 +45,12 @@ class MainViewModel(
         currentWatchlist.postValue(watchList)
     }
 
-    fun updateWatchList(watchList: WatchList) = viewModelScope.launch {
+    fun updateWatchList(oldWatchlistName: String, watchList: WatchList) = viewModelScope.launch {
+        selectedSymbols.forEach {
+            if (oldWatchlistName == it.watchList.name) {
+                it.watchList.name = watchList.name
+            }
+        }
         currentWatchlist.postValue(watchList)
         watchListRepo.updateWatchlist(watchList)
     }
@@ -53,6 +60,7 @@ class MainViewModel(
             currentWatchlist.postValue(DEFAULT_WATCHLIST)
         }
         watchListRepo.removeWatchlist(watchList)
+        selectedSymbols.removeIf { it.watchList ==  watchList}
     }
 
     fun fetchQuoteData(symbol: String) = viewModelScope.launch(errorHandler) {

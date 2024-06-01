@@ -1,12 +1,10 @@
 package com.tastytrade.kurshin.presentation.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -23,7 +21,9 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels {
         ViewModelFactory(requireContext())
     }
-    private val symbolAdapter = SymbolAdapter()
+    private val symbolAdapter:SymbolAdapter by lazy {
+        SymbolAdapter(viewModel)
+    }
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
@@ -73,6 +73,8 @@ class MainFragment : Fragment() {
     private fun setUpWatchlistSelector() {
         viewModel.currentWatchlist.observe(viewLifecycleOwner) {
             binding.tvSelectedWatchList.text = it.name.ifEmpty { getString(R.string.all_symbols) }
+            symbolAdapter.updateCurrentWatchList(it)
+            updateEmptyDataMessage()
         }
 
         binding.clWatchListSelector.setOnClickListener{
@@ -82,15 +84,27 @@ class MainFragment : Fragment() {
     }
 
     private fun setUpSymbolAdapter() {
-        val emptyAdapterView = requireActivity().findViewById<TextView>(R.id.tvEmptySybols)
-        val recyclerView: RecyclerView = requireActivity().findViewById(R.id.recyclerViewSymbols)
+        val recyclerView: RecyclerView = binding.recyclerViewSymbols
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         recyclerView.adapter = symbolAdapter
 
         viewModel.symbols.observe(viewLifecycleOwner) {
-            symbolAdapter.setSymbols(it)
-            emptyAdapterView.isVisible = it.isEmpty()
+            if (binding.etSearch.text.isEmpty()) {
+                symbolAdapter.setSymbols(emptyList())
+            } else {
+                symbolAdapter.setSymbols(it)
+            }
+            updateEmptyDataMessage()
         }
+    }
+
+    private fun updateEmptyDataMessage() {
+        if (binding.etSearch.text.isEmpty()) {
+            binding.tvEmptySybols.setText(R.string.start_typing_symbol)
+        } else {
+            binding.tvEmptySybols.setText(R.string.no_seacrh_results)
+        }
+        binding.tvEmptySybols.isVisible = symbolAdapter.itemCount == 0
     }
 
     private fun setUpQuotesUpdate() {
