@@ -1,8 +1,8 @@
-package com.tastytrade.kurshin.data.remote
+package com.tastytrade.kurshin.data.remote.stock
 
 import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.Quote
-import com.tastytrade.kurshin.domain.repository.IStockRepository
+import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

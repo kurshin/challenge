@@ -2,7 +2,7 @@ package com.tastytrade.kurshin.data.prefs
 
 import android.content.SharedPreferences
 import com.tastytrade.kurshin.domain.WatchList
-import com.tastytrade.kurshin.domain.repository.IWatchListRepository
+import com.tastytrade.kurshin.domain.irepository.IWatchListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map

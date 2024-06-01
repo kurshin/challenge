@@ -1,4 +1,4 @@
-package com.tastytrade.kurshin.data.remote
+package com.tastytrade.kurshin.data.remote.stock
 
 import com.tastytrade.kurshin.BuildConfig
 import com.tastytrade.kurshin.data.dto.chart.ChartResponse

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TastyTrade</string>
     <string name="done">Done</string>
-    <string name="symbol">Symbol</string>
+    <string name="symbol">Enter symbol</string>
     <string name="new_list">New Watchlist</string>
     <string name="edit_list">Edit Watchlists</string>
     <string name="all_symbols">All Symbols</string>
@@ -14,4 +14,5 @@
     <string name="can_not_be_blank">Can not be empty</string>
     <string name="delete">Delete</string>
     <string name="delete_watchlist_confirmation">Would you like to delete watchlist `%s`?</string>
+    <string name="start_typing_symbol">No entered symbols yet..</string>
 </resources>

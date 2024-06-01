@@ -2,7 +2,7 @@ package com.tastytrade.kurshin.data.persisted
 
 import com.tastytrade.kurshin.data.persisted.dao.WatchListDao
 import com.tastytrade.kurshin.data.persisted.entity.WatchListEntity
-import com.tastytrade.kurshin.domain.repository.IWatchListRepository
+import com.tastytrade.kurshin.domain.irepository.IWatchListRepository
 import com.tastytrade.kurshin.domain.WatchList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

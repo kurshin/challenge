@@ -9,6 +9,8 @@ if (localPropertiesFile.exists()) {
 }
 
 val apiKey: String = localProperties.getProperty("apiKey")
+val stockApi: String = "https://api.iex.cloud/v1/"
+val symbolApi: String = "https://api.tastyworks.com/"
 
 plugins {
     id("com.android.application")
@@ -28,6 +30,8 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        buildConfigField("String", "BASE_URL_STOCK_API", "\"$stockApi\"")
+        buildConfigField("String", "BASE_URL_SYMBOL_API", "\"$symbolApi\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

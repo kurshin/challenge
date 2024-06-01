@@ -1,4 +1,4 @@
-package com.tastytrade.kurshin.domain.repository
+package com.tastytrade.kurshin.domain.irepository
 
 import com.tastytrade.kurshin.domain.WatchList
 import kotlinx.coroutines.flow.Flow
