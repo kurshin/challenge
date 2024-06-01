@@ -1,5 +1,4 @@
 package com.tastytrade.kurshin.presentation.ui.main.watchlist
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.EditText

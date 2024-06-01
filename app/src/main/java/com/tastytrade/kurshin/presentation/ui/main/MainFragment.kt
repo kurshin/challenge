@@ -14,7 +14,9 @@ import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDial
 
 class MainFragment : Fragment() {
 
-    private val viewModel: MainViewModel by viewModels { ViewModelFactory }
+    private val viewModel: MainViewModel by viewModels {
+        ViewModelFactory(requireContext())
+    }
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!

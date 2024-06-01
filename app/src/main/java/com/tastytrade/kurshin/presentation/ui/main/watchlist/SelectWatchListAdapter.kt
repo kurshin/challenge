@@ -20,18 +20,17 @@ class SelectWatchListAdapter(
     private var selectedPosition = viewModel.watchList.indexOfFirst {
         it.name == viewModel.currentWatchlist.value?.name
     }
-    private val items = viewModel.watchList
+    private var items: List<WatchList> = viewModel.watchList
 
     init {
-        allSymbolsSelector.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                val previousPosition = selectedPosition
-                selectedPosition = NOT_SELECTED
-                notifyItemChanged(previousPosition)
-                viewModel.currentWatchlist.postValue(DEFAULT_WATCHLIST)
-                dismissAction.invoke()
-            }
+        allSymbolsSelector.setOnClickListener {
+            val previousPosition = selectedPosition
+            selectedPosition = NOT_SELECTED
+            notifyItemChanged(previousPosition)
+            viewModel.currentWatchlist.postValue(DEFAULT_WATCHLIST)
+            dismissAction.invoke()
         }
+
         allSymbolsSelector.isChecked = selectedPosition == NOT_SELECTED
     }
 

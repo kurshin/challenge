@@ -2,12 +2,13 @@ package com.tastytrade.kurshin.data.remote
 
 import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.Quote
+import com.tastytrade.kurshin.domain.repository.IStockRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class StockRepository(private val stockService: StockService) {
+class StockRepositoryImpl(private val stockService: StockService) : IStockRepository {
 
-    suspend fun fetchQuote(symbol: String): Quote {
+    override suspend fun fetchQuote(symbol: String): Quote {
         return withContext(Dispatchers.IO) {
             val quoteDto = stockService.fetchQuote(symbol).quote
             Quote(
@@ -20,7 +21,7 @@ class StockRepository(private val stockService: StockService) {
         }
     }
 
-    suspend fun fetchChart(symbol: String): List<Chart> {
+    override suspend fun fetchChart(symbol: String): List<Chart> {
         return withContext(Dispatchers.IO) {
             stockService.fetchChart(symbol).map {
                 Chart(it.symbol, it.close, it.date)
