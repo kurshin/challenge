@@ -10,19 +10,77 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/click_height"
         android:textSize="@dimen/font_size_bigger"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="My symbol" />
 
-    <ImageButton
-        android:id="@+id/btnDeleteSymbol"
-        android:layout_width="@dimen/click_width"
-        android:layout_height="@dimen/click_height"
-        android:contentDescription="@string/delete"
-        android:src="@drawable/baseline_delete_24"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSymbol"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/click_height_large"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvSymbolName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/size_margin"
+            android:textSize="@dimen/font_size_bigger"
+            app:layout_constraintBottom_toTopOf="@+id/tvLastPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="My symbol" />
+
+        <TextView
+            android:id="@+id/tvLastPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/size_margin"
+            android:gravity="center_vertical"
+            android:text="@string/last"
+            android:textStyle="bold"
+            android:textSize="@dimen/font_size_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvSymbolName"
+            app:layout_constraintTop_toBottomOf="@+id/tvSymbolName" />
+
+        <TextView
+            android:id="@+id/tvBidPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minWidth="100dp"
+            android:layout_marginTop="@dimen/size_margin"
+            android:text="@string/bid"
+            android:textSize="@dimen/font_size_small"
+            app:layout_constraintBottom_toTopOf="@+id/tvAskPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvAskPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/size_margin"
+            android:text="@string/ask"
+            android:textSize="@dimen/font_size_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvBidPrice"
+            app:layout_constraintTop_toBottomOf="@+id/tvBidPrice" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteSymbol"
+            android:layout_width="@dimen/click_width"
+            android:layout_height="@dimen/click_height"
+            android:contentDescription="@string/delete"
+            android:src="@drawable/baseline_delete_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

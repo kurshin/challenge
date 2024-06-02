@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentMainBinding
+import com.tastytrade.kurshin.presentation.ui.chart.ChartFragment
 import com.tastytrade.kurshin.presentation.ui.main.symbols.SymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
 
@@ -21,8 +24,8 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels {
         ViewModelFactory(requireContext())
     }
-    private val symbolAdapter:SymbolAdapter by lazy {
-        SymbolAdapter(viewModel)
+    private val symbolAdapter: SymbolAdapter by lazy {
+        SymbolAdapter(viewModel) { openChartFragment(it) }
     }
 
     private var _binding: FragmentMainBinding? = null
@@ -52,9 +55,9 @@ class MainFragment : Fragment() {
     private fun setUpSearch() {
         binding.etSearch.addTextChangedListener {
             val isSymbolEntered = !it.isNullOrEmpty()
-            binding.btnDone.isEnabled = isSymbolEntered
             if (isSymbolEntered) {
                 viewModel.searchSymbol(it.toString())
+                symbolAdapter.turnEditModeOn()
             } else {
                 clearSearchSymbols()
             }
@@ -63,6 +66,8 @@ class MainFragment : Fragment() {
         binding.btnDone.setOnClickListener {
             binding.etSearch.setText("")
             clearSearchSymbols()
+            symbolAdapter.saveSelectedList()
+            hideKeyboard()
         }
     }
 
@@ -77,7 +82,7 @@ class MainFragment : Fragment() {
             updateEmptyDataMessage()
         }
 
-        binding.clWatchListSelector.setOnClickListener{
+        binding.clWatchListSelector.setOnClickListener {
             val selectWatchListDialog = SelectWatchListDialog(requireActivity(), viewModel)
             selectWatchListDialog.show()
         }
@@ -110,6 +115,20 @@ class MainFragment : Fragment() {
     private fun setUpQuotesUpdate() {
         viewModel.quote.observe(viewLifecycleOwner) {
         }
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = getSystemService(requireActivity(), InputMethodManager::class.java)
+        requireActivity().currentFocus?.let { view ->
+            inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    private fun openChartFragment(symbol: String) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, ChartFragment.newInstance(symbol))
+            .addToBackStack("chart")
+            .commit()
     }
 
     override fun onDestroyView() {

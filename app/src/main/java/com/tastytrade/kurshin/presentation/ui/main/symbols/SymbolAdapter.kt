@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
@@ -12,28 +14,23 @@ import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
 
-class SymbolAdapter(private val viewModel: MainViewModel) :
+class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem: (symbol: String) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolViewHolder>() {
 
     private var symbols = emptyList<Symbol>()
     private var selectedSymbols = mutableListOf<Symbol>()
     private var lastSearchSymbols = emptyList<Symbol>()
     private var currentWatchList: WatchList = DEFAULT_WATCHLIST
-
-    fun updateCurrentWatchList(watchlist: WatchList) {
-        currentWatchList = watchlist
-        selectedSymbols = if (currentWatchList == DEFAULT_WATCHLIST) {
-            viewModel.selectedSymbols.distinct().toMutableList()
-        } else {
-            viewModel.selectedSymbols.filter { it.watchList == currentWatchList }.toMutableList()
-        }.onEach { it.isChecked = true }
-        setSymbols(lastSearchSymbols.onEach { it.isChecked = false })
-    }
+    private var isEditMode = false
 
     inner class SymbolViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val checkBoxSymbol = itemView.findViewById<CheckBox>(R.id.cbSymbolName)
+        private val layoutSymbol = itemView.findViewById<ViewGroup>(R.id.layoutSymbol)
+        private val symbolName = itemView.findViewById<TextView>(R.id.tvSymbolName)
 
         fun bind(symbol: Symbol) {
+            // isEditMode = true
+            checkBoxSymbol.isVisible = isEditMode
             checkBoxSymbol.text = symbol.name
             checkBoxSymbol.isChecked = symbol.isChecked
 
@@ -50,6 +47,11 @@ class SymbolAdapter(private val viewModel: MainViewModel) :
                     viewModel.selectedSymbols.remove(symbol)
                 }
             }
+            // isEditMode = false
+            layoutSymbol.isVisible = !isEditMode
+            symbolName.text = symbol.name
+
+            layoutSymbol.setOnClickListener { selectItem.invoke(symbol.name) }
         }
     }
 
@@ -78,5 +80,27 @@ class SymbolAdapter(private val viewModel: MainViewModel) :
         notifyDataSetChanged()
 
         lastSearchSymbols = newSymbols
+    }
+
+    fun updateCurrentWatchList(watchlist: WatchList) {
+        currentWatchList = watchlist
+        selectedSymbols = if (currentWatchList == DEFAULT_WATCHLIST) {
+            viewModel.selectedSymbols.distinct().toMutableList()
+        } else {
+            viewModel.selectedSymbols.filter { it.watchList == currentWatchList }.toMutableList()
+        }.onEach { it.isChecked = true }
+        setSymbols(lastSearchSymbols.onEach { it.isChecked = false })
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun saveSelectedList() {
+        isEditMode = false
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun turnEditModeOn() {
+        isEditMode = true
+        notifyDataSetChanged()
     }
 }

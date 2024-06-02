@@ -3,9 +3,11 @@
     <dimen name="font_size_big">18sp</dimen>
     <dimen name="font_size_bigger">16sp</dimen>
     <dimen name="font_size_normal">14sp</dimen>
+    <dimen name="font_size_small">12sp</dimen>
 
     <dimen name="size_margin">8dp</dimen>
     <dimen name="click_height">48dp</dimen>
+    <dimen name="click_height_large">62dp</dimen>
     <dimen name="click_width">64dp</dimen>
 
     <dimen name="_16dp">16dp</dimen>
