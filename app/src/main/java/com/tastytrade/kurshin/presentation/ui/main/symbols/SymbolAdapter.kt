@@ -14,7 +14,7 @@ import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
 
-class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem: (symbol: String) -> Unit) :
+class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem: (symbol: Symbol) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolViewHolder>() {
 
     private var symbols = emptyList<Symbol>()
@@ -51,7 +51,7 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
             layoutSymbol.isVisible = !isEditMode
             symbolName.text = symbol.name
 
-            layoutSymbol.setOnClickListener { selectItem.invoke(symbol.name) }
+            layoutSymbol.setOnClickListener { selectItem.invoke(symbol) }
         }
     }
 

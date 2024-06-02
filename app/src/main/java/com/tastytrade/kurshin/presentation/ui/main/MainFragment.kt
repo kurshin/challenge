@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentMainBinding
+import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.presentation.ui.chart.ChartFragment
 import com.tastytrade.kurshin.presentation.ui.main.symbols.SymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
@@ -124,7 +125,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun openChartFragment(symbol: String) {
+    private fun openChartFragment(symbol: Symbol) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, ChartFragment.newInstance(symbol))
             .addToBackStack("chart")

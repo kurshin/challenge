@@ -11,6 +11,10 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 class StockSimulationRepositoryImpl : IStockRepository {
+    companion object {
+        private const val NETWORK_SIMULATED_DELAY = 400L
+        private const val CHART_PERIOD_DAYS = 30
+    }
 
     override suspend fun fetchQuote(symbol: String): Quote {
         return withContext(Dispatchers.IO) {
@@ -33,21 +37,20 @@ class StockSimulationRepositoryImpl : IStockRepository {
 
     private fun generateQuotes(symbol: String): List<Chart> {
         val dateFormatter = DateTimeFormatter.ofPattern("dd-MM")
-        return (0 until 30).map { daysAgo ->
+        return (0 until CHART_PERIOD_DAYS).map { daysAgo ->
             val date = LocalDate.now().minusDays(daysAgo.toLong()).format(dateFormatter)
             Chart(
                 symbol = symbol,
-                price = randomDoubleInRange(),
+                open = randomDoubleInRange(),
+                close = randomDoubleInRange(),
+                high = randomDoubleInRange(),
+                low = randomDoubleInRange(),
                 date = date
             )
-        }
+        }.reversed()
     }
 
     private fun randomDoubleInRange(): Double {
         return Random.nextDouble(0.0, 100.0).takeIf { it > 0.0 } ?: 1.0
-    }
-
-    companion object {
-        private const val NETWORK_SIMULATED_DELAY = 400L
     }
 }

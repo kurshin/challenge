@@ -1,19 +1,27 @@
 package com.tastytrade.kurshin.presentation.ui.chart
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import com.github.mikephil.charting.charts.CandleStickChart
+import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentChartBinding
+import com.tastytrade.kurshin.domain.Symbol
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class ChartFragment : Fragment() {
 
     private val viewModel: ChartViewModel by viewModels { ViewModelFactory }
-    private lateinit var symbolName: String
+    private lateinit var symbol: Symbol
+
+    private val candleStickChart: CandleStickChart by lazy {
+        requireActivity().findViewById(R.id.candleStickChart)
+    }
 
     private var _binding: FragmentChartBinding? = null
     private val binding get() = _binding!!
@@ -21,7 +29,7 @@ class ChartFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            symbolName = it.getString(ARG_SYMBOL, "")
+            symbol = it.getSerializable(ARG_SYMBOL) as Symbol
         }
     }
     override fun onCreateView(
@@ -40,9 +48,23 @@ class ChartFragment : Fragment() {
         }
 
         viewModel.chart.observe(viewLifecycleOwner) {
+            CandleHelper.setUpCandleChart(candleStickChart, it)
+
+            val last = it.last()
+            binding.tvSymbolName.text = last.symbol
+            binding.tvLastPrice.text = getString(R.string.last_, String.format("%.2f", last.close))
+            binding.tvAskPrice.text = getString(R.string.ask_, String.format("%.2f", last.low))
+            binding.tvBidPrice.text = getString(R.string.bid_, String.format("%.2f", last.high))
         }
 
-        viewModel.getChartData(symbolName)
+        setUpChart()
+        viewModel.getChartData(symbol.name)
+    }
+
+    private fun setUpChart() {
+        candleStickChart.setNoDataText(getString(R.string.loading))
+        candleStickChart.invalidate()
+        binding.tvSymbolName.text = symbol.name
     }
 
     override fun onDestroyView() {
@@ -53,10 +75,10 @@ class ChartFragment : Fragment() {
     companion object {
 
         private const val ARG_SYMBOL = "arg_symbol"
-        fun newInstance(symbol: String): ChartFragment {
+        fun newInstance(symbol: Symbol): ChartFragment {
             val fragment = ChartFragment()
             val args = Bundle()
-            args.putString(ARG_SYMBOL, symbol)
+            args.putSerializable(ARG_SYMBOL, symbol)
             fragment.arguments = args
             return fragment
         }

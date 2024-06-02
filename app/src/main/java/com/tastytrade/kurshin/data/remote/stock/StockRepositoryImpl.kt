@@ -24,7 +24,7 @@ class StockRepositoryImpl(private val stockService: StockService) : IStockReposi
     override suspend fun fetchChart(symbol: String): List<Chart> {
         return withContext(Dispatchers.IO) {
             stockService.fetchChart(symbol).map {
-                Chart(it.symbol, it.close, it.date)
+                Chart(it.symbol, it.fOpen, it.fClose, it.fHigh, it.fLow, it.date)
             }
         }
     }

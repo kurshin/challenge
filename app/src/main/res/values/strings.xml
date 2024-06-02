@@ -17,6 +17,10 @@
     <string name="start_typing_symbol">No entered symbols yet..</string>
     <string name="no_seacrh_results">No symbols found..</string>
     <string name="ask">Ask:</string>
+    <string name="ask_">Ask: %s$</string>
     <string name="bid">Bid:</string>
+    <string name="bid_">Bid: %s$</string>
     <string name="last">Last:</string>
+    <string name="last_">Last: %s$</string>
+    <string name="loading">Loading..</string>
 </resources>
