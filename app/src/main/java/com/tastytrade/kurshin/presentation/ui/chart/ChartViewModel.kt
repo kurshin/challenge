@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.tastytrade.kurshin.data.remote.stock.StockRepositoryImpl
-import com.tastytrade.kurshin.data.remote.stockRetrofit
+import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
 import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -31,6 +30,9 @@ class ChartViewModel(private val stockRepo: IStockRepository) : ViewModel() {
 
 object ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ChartViewModel(StockRepositoryImpl(stockRetrofit.service)) as T
+        return ChartViewModel(
+            StockSimulationRepositoryImpl()
+//            StockRepositoryImpl(stockRetrofit.service) // IEX surprisingly stopped working for free on June 1
+        ) as T
     }
 }

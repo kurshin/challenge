@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.tastytrade.kurshin.data.persisted.AppDatabase
 import com.tastytrade.kurshin.data.persisted.WatchListRepositoryDBImpl
 import com.tastytrade.kurshin.data.remote.stock.StockRepositoryImpl
+import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
 import com.tastytrade.kurshin.data.remote.stockRetrofit
 import com.tastytrade.kurshin.data.remote.symbol.SymbolRepositoryImpl
 import com.tastytrade.kurshin.data.remote.symbolRetrofit
@@ -90,7 +91,8 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewModel(
-            StockRepositoryImpl(stockRetrofit.service),
+            StockSimulationRepositoryImpl(),
+//            StockRepositoryImpl(stockRetrofit.service), // IEX surprisingly stopped working for free on June 1
             WatchListRepositoryDBImpl(appDatabase.watchListDao()), // Stores watchlist in DB
 //            WatchListRepositoryPrefsImpl(context.getTastyTradeSharedPrefs()), // Stored watchlist in SharedPreferences
             SymbolRepositoryImpl(symbolRetrofit.service)

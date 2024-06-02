@@ -5,5 +5,5 @@ data class Quote(
     val lastPrice: Double,
     val askPrice: Double,
     val bidPrice: Double,
-    val date: String
+    val date: String = "today"
 )
