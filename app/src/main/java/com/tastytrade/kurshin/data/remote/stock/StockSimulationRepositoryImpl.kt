@@ -12,13 +12,14 @@ import kotlin.random.Random
 
 class StockSimulationRepositoryImpl : IStockRepository {
     companion object {
-        private const val NETWORK_SIMULATED_DELAY = 400L
+        private const val NETWORK_SIMULATED_DELAY_long = 400L
+        private const val NETWORK_SIMULATED_DELAY_quick = 120L
         private const val CHART_PERIOD_DAYS = 30
     }
 
     override suspend fun fetchQuote(symbol: String): Quote {
         return withContext(Dispatchers.IO) {
-            delay(NETWORK_SIMULATED_DELAY)
+            delay(NETWORK_SIMULATED_DELAY_quick)
             Quote(
                 symbol,
                 randomDoubleInRange(),
@@ -30,7 +31,7 @@ class StockSimulationRepositoryImpl : IStockRepository {
 
     override suspend fun fetchChart(symbol: String): List<Chart> {
         return withContext(Dispatchers.IO) {
-            delay(NETWORK_SIMULATED_DELAY)
+            delay(NETWORK_SIMULATED_DELAY_long)
             generateQuotes(symbol)
         }
     }

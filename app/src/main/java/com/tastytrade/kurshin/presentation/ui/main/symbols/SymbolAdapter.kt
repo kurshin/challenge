@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
+import com.tastytrade.kurshin.domain.Quote
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
@@ -27,6 +28,9 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
         private val checkBoxSymbol = itemView.findViewById<CheckBox>(R.id.cbSymbolName)
         private val layoutSymbol = itemView.findViewById<ViewGroup>(R.id.layoutSymbol)
         private val symbolName = itemView.findViewById<TextView>(R.id.tvSymbolName)
+        private val texLsatPrice = itemView.findViewById<TextView>(R.id.tvLastPrice)
+        private val textAskPrice = itemView.findViewById<TextView>(R.id.tvAskPrice)
+        private val textBidPrice = itemView.findViewById<TextView>(R.id.tvBidPrice)
 
         fun bind(symbol: Symbol) {
             // isEditMode = true
@@ -51,6 +55,10 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
             layoutSymbol.isVisible = !isEditMode
             symbolName.text = symbol.name
 
+            texLsatPrice.text = symbolName.context.getString(R.string.last_, String.format("%.2f", symbol.lastPrice))
+            textAskPrice.text = symbolName.context.getString(R.string.ask_, String.format("%.2f", symbol.askPrice))
+            textBidPrice.text = symbolName.context.getString(R.string.bid_, String.format("%.2f", symbol.bidPrice))
+
             layoutSymbol.setOnClickListener { selectItem.invoke(symbol) }
         }
     }
@@ -68,6 +76,8 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
     override fun getItemCount(): Int {
         return symbols.size
     }
+
+    fun getAllSymbolNames() = symbols.map { it.name }
 
     @SuppressLint("NotifyDataSetChanged")
     fun setSymbols(newSymbols: List<Symbol>) {
@@ -102,5 +112,15 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
     fun turnEditModeOn() {
         isEditMode = true
         notifyDataSetChanged()
+    }
+
+    fun updateSymbol(quote: Quote) {
+        val index = symbols.indexOfFirst { it.name == quote.symbol }
+        if (index != -1) {
+            symbols[index].lastPrice = quote.lastPrice
+            symbols[index].askPrice = quote.askPrice
+            symbols[index].bidPrice = quote.bidPrice
+            notifyItemChanged(index)
+        }
     }
 }

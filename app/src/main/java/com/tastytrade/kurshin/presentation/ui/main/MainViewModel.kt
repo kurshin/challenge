@@ -33,7 +33,6 @@ class MainViewModel(
     var selectedSymbols = mutableListOf<Symbol>()
 
     val error = MutableLiveData<String>()
-    val quote = MutableLiveData<Quote>()
     val symbols = MutableLiveData<List<Symbol>>()
     var watchList: List<WatchList> = emptyList()
 
@@ -64,10 +63,7 @@ class MainViewModel(
         selectedSymbols.removeIf { it.watchList ==  watchList}
     }
 
-    fun fetchQuoteData(symbol: String) = viewModelScope.launch(errorHandler) {
-        val result = stockRepo.fetchQuote(symbol)
-        quote.postValue(result)
-    }
+    suspend fun fetchQuoteData(symbol: String) = stockRepo.fetchQuote(symbol)
 
     fun searchSymbol(symbol: String) = viewModelScope.launch(errorHandler) {
         val result = symbolRepo.fetchSymbols(symbol)

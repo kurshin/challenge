@@ -11,8 +11,6 @@ import com.github.mikephil.charting.charts.CandleStickChart
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentChartBinding
 import com.tastytrade.kurshin.domain.Symbol
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 class ChartFragment : Fragment() {
 
@@ -49,16 +47,17 @@ class ChartFragment : Fragment() {
 
         viewModel.chart.observe(viewLifecycleOwner) {
             CandleHelper.setUpCandleChart(candleStickChart, it)
+        }
 
-            val last = it.last()
-            binding.tvSymbolName.text = last.symbol
-            binding.tvLastPrice.text = getString(R.string.last_, String.format("%.2f", last.close))
-            binding.tvAskPrice.text = getString(R.string.ask_, String.format("%.2f", last.low))
-            binding.tvBidPrice.text = getString(R.string.bid_, String.format("%.2f", last.high))
+        viewModel.quote.observe(viewLifecycleOwner) {
+            binding.tvLastPrice.text = getString(R.string.last_, String.format("%.2f", it.lastPrice))
+            binding.tvAskPrice.text = getString(R.string.ask_, String.format("%.2f", it.askPrice))
+            binding.tvBidPrice.text = getString(R.string.bid_, String.format("%.2f", it.bidPrice))
         }
 
         setUpChart()
         viewModel.getChartData(symbol.name)
+        viewModel.getQuoteDataRepeatedly(symbol.name)
     }
 
     private fun setUpChart() {
