@@ -9,23 +9,17 @@ import com.tastytrade.kurshin.domain.Chart
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-private const val refreshDelayMillis = 5000L
 class ChartViewModel(private val stockRepo: IStockRepository) : ViewModel() {
 
     val chart = MutableLiveData<List<Chart>>()
     val quote = MutableLiveData<Symbol>()
     val error = MutableLiveData<String>()
 
-    fun getQuoteDataRepeatedly(symbol: String) = viewModelScope.launch(errorHandler) {
-        while (isActive) {
-            val result = stockRepo.fetchQuote(symbol)
-            quote.postValue(result)
-            delay(refreshDelayMillis)
-        }
+    suspend fun getQuoteDataRepeatedly(symbol: String) {
+        val result = stockRepo.fetchQuote(symbol)
+        quote.postValue(result)
     }
 
     fun getChartData(symbol: String) = viewModelScope.launch(errorHandler) {

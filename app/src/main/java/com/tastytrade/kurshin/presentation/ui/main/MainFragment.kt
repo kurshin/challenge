@@ -137,12 +137,10 @@ class MainFragment : Fragment() {
     }
 
     private fun startPriceRefresh() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                while (isActive) {
-                    fetchAndUpdatePrices()
-                    delay(REFRESH_DELAY_MILLIS)
-                }
+        lifecycleScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                fetchAndUpdatePrices()
+                delay(REFRESH_DELAY_MILLIS)
             }
         }
     }
@@ -150,11 +148,9 @@ class MainFragment : Fragment() {
     private suspend fun fetchAndUpdatePrices() {
         val symbolList = symbolAdapter.getAllSymbolNames().toList()
         symbolList.forEach { symbol ->
-            lifecycleScope.launch(Dispatchers.IO) {
-                val quote = viewModel.fetchQuoteData(symbol)
-                withContext(Dispatchers.Main) {
-                    symbolAdapter.updateSymbol(quote)
-                }
+            val quote = viewModel.fetchQuoteData(symbol)
+            withContext(Dispatchers.Main) {
+                symbolAdapter.updateSymbol(quote)
             }
         }
     }

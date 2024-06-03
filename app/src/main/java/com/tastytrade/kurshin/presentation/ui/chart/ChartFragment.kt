@@ -7,10 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.CandleStickChart
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentChartBinding
 import com.tastytrade.kurshin.domain.Symbol
+import com.tastytrade.kurshin.presentation.ui.main.MainFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class ChartFragment : Fragment() {
 
@@ -57,7 +63,16 @@ class ChartFragment : Fragment() {
 
         setUpChart()
         viewModel.getChartData(symbol.name)
-        viewModel.getQuoteDataRepeatedly(symbol.name)
+        startPriceRefresh()
+    }
+
+    private fun startPriceRefresh() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                viewModel.getQuoteDataRepeatedly(symbol.name)
+                delay(5000)
+            }
+        }
     }
 
     private fun setUpChart() {
