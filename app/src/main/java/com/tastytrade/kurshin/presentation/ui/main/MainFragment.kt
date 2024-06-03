@@ -82,7 +82,7 @@ class MainFragment : Fragment() {
     }
 
     private fun clearSearchSymbols() {
-        viewModel.symbols.postValue(emptyList())
+        viewModel.symbolsForAutofill.postValue(emptyList())
     }
 
     private fun setUpWatchlistSelector() {
@@ -103,7 +103,7 @@ class MainFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         recyclerView.adapter = symbolAdapter
 
-        viewModel.symbols.observe(viewLifecycleOwner) {
+        viewModel.symbolsForAutofill.observe(viewLifecycleOwner) {
             if (binding.etSearch.text.isEmpty()) {
                 symbolAdapter.setSymbols(emptyList())
             } else {

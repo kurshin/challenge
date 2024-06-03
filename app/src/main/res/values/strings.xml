@@ -14,6 +14,7 @@
     <string name="can_not_be_blank">Can not be empty</string>
     <string name="delete">Delete</string>
     <string name="delete_watchlist_confirmation">Would you like to delete watchlist `%s`?</string>
+    <string name="delete_symbol_confirmation">Would you like to remove symbol `%s`?</string>
     <string name="start_typing_symbol">No entered symbols yet..</string>
     <string name="no_seacrh_results">No symbols found..</string>
     <string name="ask">Ask:</string>

@@ -8,13 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.tastytrade.kurshin.data.persisted.AppDatabase
 import com.tastytrade.kurshin.data.persisted.WatchListRepositoryDBImpl
-import com.tastytrade.kurshin.data.remote.stock.StockRepositoryImpl
 import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
-import com.tastytrade.kurshin.data.remote.stockRetrofit
 import com.tastytrade.kurshin.data.remote.symbol.SymbolRepositoryImpl
 import com.tastytrade.kurshin.data.remote.symbolRetrofit
 import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
-import com.tastytrade.kurshin.domain.Quote
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
@@ -33,7 +30,7 @@ class MainViewModel(
     var selectedSymbols = mutableListOf<Symbol>()
 
     val error = MutableLiveData<String>()
-    val symbols = MutableLiveData<List<Symbol>>()
+    val symbolsForAutofill = MutableLiveData<List<Symbol>>()
     var watchList: List<WatchList> = emptyList()
 
     init {
@@ -63,11 +60,16 @@ class MainViewModel(
         selectedSymbols.removeIf { it.watchList ==  watchList}
     }
 
+    fun deleteSymbol(symbol: Symbol) = viewModelScope.launch {
+        selectedSymbols.remove(symbol)
+        currentWatchlist.postValue(currentWatchlist.value)
+    }
+
     suspend fun fetchQuoteData(symbol: String) = stockRepo.fetchQuote(symbol)
 
     fun searchSymbol(symbol: String) = viewModelScope.launch(errorHandler) {
         val result = symbolRepo.fetchSymbols(symbol)
-        symbols.postValue(result)
+        symbolsForAutofill.postValue(result)
     }
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->

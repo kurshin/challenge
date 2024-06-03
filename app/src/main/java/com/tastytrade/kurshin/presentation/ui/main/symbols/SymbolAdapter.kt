@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.tastytrade.kurshin.domain.Quote
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
+import com.tastytrade.kurshin.presentation.ui.main.watchlist.showDeleteSymbolDialog
 
 class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem: (symbol: Symbol) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolViewHolder>() {
@@ -31,6 +33,7 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
         private val texLsatPrice = itemView.findViewById<TextView>(R.id.tvLastPrice)
         private val textAskPrice = itemView.findViewById<TextView>(R.id.tvAskPrice)
         private val textBidPrice = itemView.findViewById<TextView>(R.id.tvBidPrice)
+        private val deleteSymbol = itemView.findViewById<ImageButton>(R.id.btnDeleteSymbol)
 
         fun bind(symbol: Symbol) {
             // isEditMode = true
@@ -60,6 +63,12 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
             textBidPrice.text = symbolName.context.getString(R.string.bid_, String.format("%.2f", symbol.bidPrice))
 
             layoutSymbol.setOnClickListener { selectItem.invoke(symbol) }
+
+            deleteSymbol.setOnClickListener {
+                it.context.showDeleteSymbolDialog(viewModel, symbol) {
+
+                }
+            }
         }
     }
 

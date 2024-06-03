@@ -5,6 +5,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import com.tastytrade.kurshin.R
+import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
 
@@ -53,6 +54,20 @@ fun Context.showDeleteWatchlistDialog(userViewModel: MainViewModel, watchList: W
         .setTitle(getString(R.string.delete_watchlist_confirmation, watchList.name))
         .setPositiveButton(R.string.delete) { _, _ ->
             userViewModel.deleteWatchList(watchList)
+        }
+        .setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.dismiss()
+        }
+        .create()
+    dialog.show()
+}
+
+fun Context.showDeleteSymbolDialog(userViewModel: MainViewModel, symbol: Symbol, callback:() -> Unit) {
+    val dialog = AlertDialog.Builder(this)
+        .setTitle(getString(R.string.delete_symbol_confirmation, symbol.name))
+        .setPositiveButton(R.string.delete) { _, _ ->
+            userViewModel.deleteSymbol(symbol)
+            callback.invoke()
         }
         .setNegativeButton(R.string.cancel) { dialog, _ ->
             dialog.dismiss()
