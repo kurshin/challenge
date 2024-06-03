@@ -1,14 +1,12 @@
 package com.tastytrade.kurshin.presentation.ui.chart
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
 import com.tastytrade.kurshin.domain.Chart
-import com.tastytrade.kurshin.domain.Quote
+import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
@@ -19,7 +17,7 @@ private const val refreshDelayMillis = 5000L
 class ChartViewModel(private val stockRepo: IStockRepository) : ViewModel() {
 
     val chart = MutableLiveData<List<Chart>>()
-    val quote = MutableLiveData<Quote>()
+    val quote = MutableLiveData<Symbol>()
     val error = MutableLiveData<String>()
 
     fun getQuoteDataRepeatedly(symbol: String) = viewModelScope.launch(errorHandler) {

@@ -40,7 +40,7 @@ fun Context.showEditWatchlistDialog(userViewModel: MainViewModel, watchList: Wat
             } else {
                 val oldName = watchList.name
                 watchList.name = watchlistName
-                userViewModel.updateWatchList(oldName, watchList)
+                userViewModel.updateWatchList(watchList)
             }
             dialog.dismiss()
         } else {

@@ -1,22 +1,23 @@
 package com.tastytrade.kurshin.data.remote.stock
 
 import com.tastytrade.kurshin.domain.Chart
-import com.tastytrade.kurshin.domain.Quote
+import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class StockRepositoryImpl(private val stockService: StockService) : IStockRepository {
 
-    override suspend fun fetchQuote(symbol: String): Quote {
+    override suspend fun fetchQuote(symbol: String): Symbol {
         return withContext(Dispatchers.IO) {
             val quoteDto = stockService.fetchQuote(symbol).quote
-            Quote(
+            Symbol(
                 quoteDto.symbol,
+                false,
+                0,
                 quoteDto.latestPrice,
                 quoteDto.iexAskPrice,
-                quoteDto.iexBidPrice,
-                quoteDto.latestTime
+                quoteDto.iexBidPrice
             )
         }
     }

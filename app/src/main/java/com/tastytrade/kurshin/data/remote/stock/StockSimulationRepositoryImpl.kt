@@ -1,7 +1,7 @@
 package com.tastytrade.kurshin.data.remote.stock
 
 import com.tastytrade.kurshin.domain.Chart
-import com.tastytrade.kurshin.domain.Quote
+import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,11 +17,13 @@ class StockSimulationRepositoryImpl : IStockRepository {
         private const val CHART_PERIOD_DAYS = 30
     }
 
-    override suspend fun fetchQuote(symbol: String): Quote {
+    override suspend fun fetchQuote(symbol: String): Symbol {
         return withContext(Dispatchers.IO) {
             delay(NETWORK_SIMULATED_DELAY_quick)
-            Quote(
+            Symbol(
                 symbol,
+                false,
+                0,
                 randomDoubleInRange(),
                 randomDoubleInRange(),
                 randomDoubleInRange(),

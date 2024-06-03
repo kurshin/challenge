@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.tastytrade.kurshin.data.persisted.AppDatabase
+import com.tastytrade.kurshin.data.persisted.QuoteRepositoryImpl
 import com.tastytrade.kurshin.data.persisted.WatchListRepositoryDBImpl
 import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
 import com.tastytrade.kurshin.data.remote.symbol.SymbolRepositoryImpl
@@ -14,6 +15,7 @@ import com.tastytrade.kurshin.data.remote.symbolRetrofit
 import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
+import com.tastytrade.kurshin.domain.irepository.IQuoteRepository
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import com.tastytrade.kurshin.domain.irepository.ISymbolRepository
 import com.tastytrade.kurshin.domain.irepository.IWatchListRepository
@@ -23,7 +25,8 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val stockRepo: IStockRepository,
     private val watchListRepo: IWatchListRepository,
-    private val symbolRepo: ISymbolRepository
+    private val symbolRepo: ISymbolRepository,
+    private val quoteRepo: IQuoteRepository,
 ) : ViewModel() {
 
     val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
@@ -42,12 +45,7 @@ class MainViewModel(
         currentWatchlist.postValue(watchList)
     }
 
-    fun updateWatchList(oldWatchlistName: String, watchList: WatchList) = viewModelScope.launch {
-        selectedSymbols.forEach {
-            if (oldWatchlistName == it.watchList.name) {
-                it.watchList.name = watchList.name
-            }
-        }
+    fun updateWatchList(watchList: WatchList) = viewModelScope.launch {
         currentWatchlist.postValue(watchList)
         watchListRepo.updateWatchlist(watchList)
     }
@@ -57,7 +55,7 @@ class MainViewModel(
             currentWatchlist.postValue(DEFAULT_WATCHLIST)
         }
         watchListRepo.removeWatchlist(watchList)
-        selectedSymbols.removeIf { it.watchList ==  watchList}
+        selectedSymbols.removeIf { it.watchListId ==  watchList.id}
     }
 
     fun deleteSymbol(symbol: Symbol) = viewModelScope.launch {
@@ -91,9 +89,9 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
         return MainViewModel(
             StockSimulationRepositoryImpl(),
 //            StockRepositoryImpl(stockRetrofit.service), // IEX surprisingly stopped working for free on June 1
-            WatchListRepositoryDBImpl(appDatabase.watchListDao()), // Stores watchlist in DB
-//            WatchListRepositoryPrefsImpl(context.getTastyTradeSharedPrefs()), // Stored watchlist in SharedPreferences
-            SymbolRepositoryImpl(symbolRetrofit.service)
+            WatchListRepositoryDBImpl(appDatabase.watchListDao()),
+            SymbolRepositoryImpl(symbolRetrofit.service),
+            QuoteRepositoryImpl(appDatabase.quoteDao())
         ) as T
     }
 }

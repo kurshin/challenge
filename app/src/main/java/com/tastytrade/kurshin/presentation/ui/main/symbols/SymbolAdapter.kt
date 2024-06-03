@@ -11,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
-import com.tastytrade.kurshin.domain.Quote
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
@@ -45,7 +44,7 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
                 symbol.isChecked = (it as CheckBox).isChecked
                 if (symbol.isChecked) {
                     if (!selectedSymbols.contains(symbol)) {
-                        symbol.apply { watchList = currentWatchList }
+                        symbol.apply { watchListId = currentWatchList.id }
                         selectedSymbols.add(symbol)
                         viewModel.selectedSymbols.add(symbol)
                     }
@@ -106,7 +105,7 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
         selectedSymbols = if (currentWatchList == DEFAULT_WATCHLIST) {
             viewModel.selectedSymbols.distinct().toMutableList()
         } else {
-            viewModel.selectedSymbols.filter { it.watchList == currentWatchList }.toMutableList()
+            viewModel.selectedSymbols.filter { it.watchListId == currentWatchList.id }.toMutableList()
         }.onEach { it.isChecked = true }
         setSymbols(lastSearchSymbols.onEach { it.isChecked = false })
     }
@@ -123,8 +122,8 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
         notifyDataSetChanged()
     }
 
-    fun updateSymbol(quote: Quote) {
-        val index = symbols.indexOfFirst { it.name == quote.symbol }
+    fun updateSymbol(quote: Symbol) {
+        val index = symbols.indexOfFirst { it.name == quote.name }
         if (index != -1) {
             symbols[index].lastPrice = quote.lastPrice
             symbols[index].askPrice = quote.askPrice

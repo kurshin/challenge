@@ -17,7 +17,7 @@ data class QuoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val name: String,
-    val watchlistId: Int,
+    val watchlistId: Long,
     val lastPrice: Double = 0.0,
     val askPrice: Double = 0.0,
     val bidPrice: Double = 0.0
