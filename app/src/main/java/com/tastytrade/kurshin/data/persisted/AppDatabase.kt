@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.tastytrade.kurshin.data.persisted.dao.WatchListDao
+import com.tastytrade.kurshin.data.persisted.entity.QuoteEntity
 import com.tastytrade.kurshin.data.persisted.entity.WatchListEntity
 
-@Database(entities = [WatchListEntity::class], version = 1)
+@Database(entities = [WatchListEntity::class, QuoteEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun watchListDao(): WatchListDao
     companion object {

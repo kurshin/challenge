@@ -14,7 +14,7 @@ interface WatchListDao {
     @Query("SELECT * FROM watchlists")
     fun getAllWatchLists(): Flow<List<WatchListEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWatchList(watchList: WatchListEntity)
 
     @Update
