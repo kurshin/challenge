@@ -25,7 +25,19 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         }
     }
 
-    override suspend fun getQuotesForWatchlist(watchlistId: Int): List<Symbol> {
+    override suspend fun getAllQuotesSync(): List<Symbol> {
+        return quoteDao.getAllQuotesSync().map { quote ->
+            Symbol(
+                name = quote.name,
+                lastPrice = quote.lastPrice,
+                askPrice = quote.askPrice,
+                bidPrice = quote.bidPrice,
+                watchListId = quote.watchlistId
+            )
+        }
+    }
+
+    override suspend fun getQuotesForWatchlist(watchlistId: Long): List<Symbol> {
         return withContext(Dispatchers.IO) {
             quoteDao.getQuotesForWatchlist(watchlistId).map {
                 Symbol(
@@ -43,7 +55,6 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         withContext(Dispatchers.IO) {
             quoteDao.insertQuote(
                 QuoteEntity(
-                    0,
                     symbol.name,
                     symbol.watchListId,
                     symbol.lastPrice,
@@ -58,7 +69,6 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         withContext(Dispatchers.IO) {
             quoteDao.deleteQuote(
                 QuoteEntity(
-                    0,
                     symbol.name,
                     symbol.watchListId,
                     symbol.lastPrice,

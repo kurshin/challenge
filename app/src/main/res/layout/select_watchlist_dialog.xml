@@ -11,6 +11,7 @@
         android:layout_height="@dimen/click_height"
         android:text="@string/all_symbols"
         android:textSize="@dimen/font_size_bigger"
+        android:visibility="gone"
         android:gravity="center_vertical"/>
 
     <androidx.recyclerview.widget.RecyclerView

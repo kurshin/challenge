@@ -2,6 +2,8 @@ package com.tastytrade.kurshin.presentation.ui.main
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -30,37 +32,52 @@ class MainViewModel(
 ) : ViewModel() {
 
     val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
-    var selectedSymbols = mutableListOf<Symbol>()
+    var selectedSymbols:List<Symbol> = emptyList()
+    var selectedSymbolsFlow = quoteRepo.getAllQuotes()
 
     val error = MutableLiveData<String>()
     val symbolsForAutofill = MutableLiveData<List<Symbol>>()
     var watchList: List<WatchList> = emptyList()
 
-    init {
-        fulfillWatchlist()
+    private val errorHandler = CoroutineExceptionHandler { _, exception ->
+        error.postValue(exception.message)
+        Log.i("1111", "error = $exception.message")
     }
 
-    fun addWatchList(watchList: WatchList) = viewModelScope.launch {
+    init {
+        fulfillWatchlistData()
+        fulfillQuotesData()
+        fulfillDBInitialData()
+    }
+
+    fun addWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
         watchListRepo.addWatchlist(watchList)
         currentWatchlist.postValue(watchList)
     }
 
-    fun updateWatchList(watchList: WatchList) = viewModelScope.launch {
+    fun updateWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
         currentWatchlist.postValue(watchList)
         watchListRepo.updateWatchlist(watchList)
     }
 
-    fun deleteWatchList(watchList: WatchList) = viewModelScope.launch {
+    fun refreshWatchList() = viewModelScope.launch(errorHandler) {
+        currentWatchlist.postValue(currentWatchlist.value)
+    }
+
+    fun deleteWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
         if (watchList.name == currentWatchlist.value?.name) {
             currentWatchlist.postValue(DEFAULT_WATCHLIST)
         }
         watchListRepo.removeWatchlist(watchList)
-        selectedSymbols.removeIf { it.watchListId ==  watchList.id}
     }
 
-    fun deleteSymbol(symbol: Symbol) = viewModelScope.launch {
-        selectedSymbols.remove(symbol)
-        currentWatchlist.postValue(currentWatchlist.value)
+    fun removeSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
+        quoteRepo.deleteQuote(symbol)
+//        currentWatchlist.postValue(currentWatchlist.value)
+    }
+
+    fun addSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
+        quoteRepo.insertQuote(symbol)
     }
 
     suspend fun fetchQuoteData(symbol: String) = stockRepo.fetchQuote(symbol)
@@ -70,12 +87,43 @@ class MainViewModel(
         symbolsForAutofill.postValue(result)
     }
 
-    private val errorHandler = CoroutineExceptionHandler { _, exception ->
-        error.postValue(exception.message)
+    fun getSymbolsForWatchlist(watchlist: WatchList): LiveData<List<Symbol>> {
+        val result = MutableLiveData<List<Symbol>>()
+        viewModelScope.launch {
+            result.value = if (watchlist.isDefault) {
+                quoteRepo.getAllQuotesSync()
+            } else {
+                quoteRepo.getQuotesForWatchlist(watchlist.id)
+            }
+        }
+        return result
     }
 
-    private fun fulfillWatchlist() = viewModelScope.launch {
+    private fun fulfillWatchlistData() = viewModelScope.launch(errorHandler) {
         watchListRepo.getAllWatchLists().collect { watchList = it }
+    }
+
+    private fun fulfillQuotesData() = viewModelScope.launch(errorHandler) {
+        quoteRepo.getAllQuotes().collect { selectedSymbols = it }
+    }
+
+    private fun fulfillDBInitialData() = viewModelScope.launch(errorHandler) {
+        val allWatchLists = watchListRepo.getAllWatchListsSync()
+        if (allWatchLists.isEmpty()) {
+            watchListRepo.addWatchlist(DEFAULT_WATCHLIST)
+
+            val defaultWatchList = WatchList("My first list")
+            val id = watchListRepo.addWatchlist(defaultWatchList)
+            defaultWatchList.id = id
+            quoteRepo.insertQuote(Symbol("AAPL", true, id))
+            quoteRepo.insertQuote(Symbol("GOOG", true, id))
+            quoteRepo.insertQuote(Symbol("MSFT", true, id))
+
+            currentWatchlist.postValue(defaultWatchList)
+        } else {
+            val defaultWatchlist = allWatchLists.first { it.isDefault }
+            currentWatchlist.postValue(defaultWatchlist)
+        }
     }
 }
 

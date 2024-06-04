@@ -12,12 +12,16 @@ import kotlinx.coroutines.withContext
 class WatchListRepositoryDBImpl(private val watchlistDao: WatchListDao) : IWatchListRepository {
 
     override fun getAllWatchLists(): Flow<List<WatchList>> {
-        return watchlistDao.getAllWatchLists().map { list -> list.map { WatchList(it.name, id = it.id) } }
+        return watchlistDao.getAllWatchLists().map { list -> list.map { WatchList(it.name, id = it.id, isDefault = it.isDefault) } }
     }
 
-    override suspend fun addWatchlist(newList: WatchList) {
-        withContext(Dispatchers.IO) {
-            watchlistDao.insertWatchList(WatchListEntity(newList.id, newList.name))
+    override suspend fun getAllWatchListsSync(): List<WatchList> {
+        return watchlistDao.getAllWatchListsSync().map { WatchList(it.name, id = it.id, isDefault = it.isDefault) }
+    }
+
+    override suspend fun addWatchlist(newList: WatchList): Long {
+        return withContext(Dispatchers.IO) {
+            watchlistDao.insertWatchList(WatchListEntity(newList.id, newList.name, newList.isDefault))
         }
     }
 

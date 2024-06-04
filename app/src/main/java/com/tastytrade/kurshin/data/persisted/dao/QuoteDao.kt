@@ -15,8 +15,11 @@ interface QuoteDao {
     @Query("SELECT * FROM quotes")
     fun getAllQuotes(): Flow<List<QuoteEntity>>
 
+    @Query("SELECT * FROM quotes")
+    suspend fun getAllQuotesSync(): List<QuoteEntity>
+
     @Query("SELECT * FROM quotes WHERE watchlistId = :watchlistId")
-    suspend fun getQuotesForWatchlist(watchlistId: Int): List<QuoteEntity>
+    suspend fun getQuotesForWatchlist(watchlistId: Long): List<QuoteEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuote(quote: QuoteEntity)

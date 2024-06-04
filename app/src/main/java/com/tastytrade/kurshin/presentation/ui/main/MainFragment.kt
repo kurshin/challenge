@@ -11,15 +11,16 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentMainBinding
 import com.tastytrade.kurshin.domain.Symbol
+import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.chart.ChartFragment
+import com.tastytrade.kurshin.presentation.ui.main.symbols.NewSymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.symbols.SymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
 import kotlinx.coroutines.Dispatchers
@@ -33,8 +34,8 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels {
         ViewModelFactory(requireContext())
     }
-    private val symbolAdapter: SymbolAdapter by lazy {
-        SymbolAdapter(viewModel) { openChartFragment(it) }
+    private val symbolAdapter: NewSymbolAdapter by lazy {
+        NewSymbolAdapter(viewModel) { symbolSelected -> openChartFragment(symbolSelected) }
     }
 
     private var _binding: FragmentMainBinding? = null
@@ -56,8 +57,8 @@ class MainFragment : Fragment() {
         }
 
         setUpSearch()
-        setUpWatchlistSelector()
         setUpSymbolAdapter()
+        setUpWatchlistSelector()
 
         startPriceRefresh()
     }
@@ -78,6 +79,7 @@ class MainFragment : Fragment() {
             clearSearchSymbols()
             symbolAdapter.saveSelectedList()
             hideKeyboard()
+            viewModel.refreshWatchList()
         }
     }
 
@@ -86,15 +88,21 @@ class MainFragment : Fragment() {
     }
 
     private fun setUpWatchlistSelector() {
-        viewModel.currentWatchlist.observe(viewLifecycleOwner) {
-            binding.tvSelectedWatchList.text = it.name.ifEmpty { getString(R.string.all_symbols) }
-            symbolAdapter.updateCurrentWatchList(it)
-            updateEmptyDataMessage()
+        viewModel.currentWatchlist.observe(viewLifecycleOwner) { watchlist ->
+            binding.tvSelectedWatchList.text = watchlist.name
+            updateSymbolsAdapter(watchlist)
         }
 
         binding.clWatchListSelector.setOnClickListener {
             val selectWatchListDialog = SelectWatchListDialog(requireActivity(), viewModel)
             selectWatchListDialog.show()
+        }
+    }
+
+    private fun updateSymbolsAdapter(watchlist: WatchList) {
+        viewModel.getSymbolsForWatchlist(watchlist).observe(viewLifecycleOwner) { quotes ->
+            symbolAdapter.updateSymbols(quotes)
+            updateEmptyDataMessage()
         }
     }
 

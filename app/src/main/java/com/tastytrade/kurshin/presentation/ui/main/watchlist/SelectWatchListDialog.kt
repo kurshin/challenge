@@ -19,7 +19,6 @@ class SelectWatchListDialog(private val context: Context, private val viewModel:
 
     private val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
     private val newWatchlistButton: Button = view.findViewById(R.id.btnNewList)
-    private val checkBoxAllSymbols: RadioButton = view.findViewById(R.id.cbNoWatchlists)
 
     init {
         dialog.setContentView(view)
@@ -27,7 +26,7 @@ class SelectWatchListDialog(private val context: Context, private val viewModel:
         recyclerView.layoutManager = LinearLayoutManager(context)
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-        recyclerView.adapter = SelectWatchListAdapter(viewModel, checkBoxAllSymbols) {
+        recyclerView.adapter = SelectWatchListAdapter(viewModel) {
             dialog.dismiss()
         }
 

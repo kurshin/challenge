@@ -66,7 +66,7 @@ fun Context.showDeleteSymbolDialog(userViewModel: MainViewModel, symbol: Symbol,
     val dialog = AlertDialog.Builder(this)
         .setTitle(getString(R.string.delete_symbol_confirmation, symbol.name))
         .setPositiveButton(R.string.delete) { _, _ ->
-            userViewModel.deleteSymbol(symbol)
+            userViewModel.removeSymbol(symbol)
             callback.invoke()
         }
         .setNegativeButton(R.string.cancel) { dialog, _ ->

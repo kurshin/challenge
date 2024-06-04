@@ -14,8 +14,7 @@ import androidx.room.PrimaryKey
     )]
 )
 data class QuoteEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    @PrimaryKey
     val name: String,
     val watchlistId: Long,
     val lastPrice: Double = 0.0,

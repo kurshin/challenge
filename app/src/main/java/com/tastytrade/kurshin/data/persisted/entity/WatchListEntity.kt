@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class WatchListEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-    val name: String
+    val name: String,
+    val isDefault: Boolean = false
 )
