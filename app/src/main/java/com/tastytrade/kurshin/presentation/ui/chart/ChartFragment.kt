@@ -12,15 +12,15 @@ import com.github.mikephil.charting.charts.CandleStickChart
 import com.tastytrade.kurshin.R
 import com.tastytrade.kurshin.databinding.FragmentChartBinding
 import com.tastytrade.kurshin.domain.Symbol
-import com.tastytrade.kurshin.presentation.ui.main.MainFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-
+@AndroidEntryPoint
 class ChartFragment : Fragment() {
 
-    private val viewModel: ChartViewModel by viewModels { ViewModelFactory }
+    private val viewModel: ChartViewModel by viewModels()
     private lateinit var symbol: Symbol
 
     private val candleStickChart: CandleStickChart by lazy {
@@ -30,6 +30,7 @@ class ChartFragment : Fragment() {
     private var _binding: FragmentChartBinding? = null
     private val binding get() = _binding!!
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -67,7 +68,7 @@ class ChartFragment : Fragment() {
     }
 
     private fun startPriceRefresh() {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO + viewModel.errorHandler) {
             while (isActive) {
                 viewModel.getQuoteDataRepeatedly(symbol.name)
                 delay(5000)

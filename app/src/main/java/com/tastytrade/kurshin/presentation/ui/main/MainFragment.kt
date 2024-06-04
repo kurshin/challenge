@@ -19,21 +19,23 @@ import com.tastytrade.kurshin.databinding.FragmentMainBinding
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.chart.ChartFragment
-import com.tastytrade.kurshin.presentation.ui.main.symbols.NewSymbolAdapter
+import com.tastytrade.kurshin.presentation.ui.main.symbols.SymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.UnknownHostException
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
-    private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory(requireContext())
-    }
-    private val symbolAdapter: NewSymbolAdapter by lazy {
-        NewSymbolAdapter(viewModel) { symbolSelected -> openChartFragment(symbolSelected) }
+    private val viewModel: MainViewModel by viewModels()
+
+    private val symbolAdapter: SymbolAdapter by lazy {
+        SymbolAdapter(viewModel) { symbolSelected -> openChartFragment(symbolSelected) }
     }
 
     private var _binding: FragmentMainBinding? = null
@@ -51,7 +53,11 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.error.observe(viewLifecycleOwner) {
-            Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+            if (it is UnknownHostException) {
+                Toast.makeText(requireActivity(), getString(R.string.offlline), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT).show()
+            }
         }
 
         setUpSearch()
@@ -148,7 +154,7 @@ class MainFragment : Fragment() {
     }
 
     private fun startPriceRefresh() {
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO + viewModel.networkErrorHandler) {
             while (isActive) {
                 fetchAndUpdatePrices()
                 delay(REFRESH_DELAY_MILLIS)

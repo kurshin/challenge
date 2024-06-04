@@ -1,7 +1,6 @@
 package com.tastytrade.kurshin.presentation.ui.main.symbols
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,8 @@ import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.presentation.ui.main.MainViewModel
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.showDeleteSymbolDialog
 
-class NewSymbolAdapter(private val viewModel: MainViewModel, private val onSymbolSelected: (symbol: Symbol) -> Unit) :
-    RecyclerView.Adapter<NewSymbolAdapter.SymbolViewHolder>() {
+class SymbolAdapter(private val viewModel: MainViewModel, private val onSymbolSelected: (symbol: Symbol) -> Unit) :
+    RecyclerView.Adapter<SymbolAdapter.SymbolViewHolder>() {
 
     private var symbols = mutableListOf<Symbol>()
     private var selectedSymbols = mutableListOf<Symbol>()
@@ -112,7 +111,6 @@ class NewSymbolAdapter(private val viewModel: MainViewModel, private val onSymbo
             symbols = symbolsToSet.sortedBy { it.name }.toMutableList().onEach { it.isChecked = true }
             selectedSymbols = symbolsToSet.toMutableList()
         }
-
         notifyDataSetChanged()
     }
 

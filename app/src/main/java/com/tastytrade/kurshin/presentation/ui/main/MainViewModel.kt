@@ -1,27 +1,22 @@
 package com.tastytrade.kurshin.presentation.ui.main
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.tastytrade.kurshin.data.persisted.AppDatabase
-import com.tastytrade.kurshin.data.persisted.QuoteRepositoryImpl
-import com.tastytrade.kurshin.data.persisted.WatchListRepositoryDBImpl
-import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
-import com.tastytrade.kurshin.data.remote.symbol.SymbolRepositoryImpl
-import com.tastytrade.kurshin.data.remote.symbolRetrofit
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.domain.irepository.IQuoteRepository
 import com.tastytrade.kurshin.domain.irepository.IStockRepository
 import com.tastytrade.kurshin.domain.irepository.ISymbolRepository
 import com.tastytrade.kurshin.domain.irepository.IWatchListRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val stockRepo: IStockRepository,
     private val watchListRepo: IWatchListRepository,
     private val symbolRepo: ISymbolRepository,
@@ -29,34 +24,36 @@ class MainViewModel(
 ) : ViewModel() {
 
     val currentWatchlist = MutableLiveData<WatchList?>()
-    val error = MutableLiveData<String>()
+    val error = MutableLiveData<Throwable>()
     val symbolsForAutofill = MutableLiveData<List<Symbol>>()
     var watchList: List<WatchList> = emptyList()
 
-    private val errorHandler = CoroutineExceptionHandler { _, exception ->
-        error.postValue(exception.message)
+    val networkErrorHandler = CoroutineExceptionHandler { _, exception ->
+        error.postValue(exception)
     }
 
+    private val dbErrorHandler = CoroutineExceptionHandler { _, _ -> }
+
     init {
-        fulfillWatchlistData()
+        fetchWatchlistData()
         fulfillDBInitialData()
     }
 
-    fun addWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
+    fun addWatchList(watchList: WatchList) = viewModelScope.launch(dbErrorHandler) {
         val id = watchListRepo.addWatchlist(watchList)
         currentWatchlist.postValue(watchList.apply { watchList.id = id })
     }
 
-    fun updateWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
+    fun updateWatchList(watchList: WatchList) = viewModelScope.launch(dbErrorHandler) {
         currentWatchlist.postValue(watchList)
         watchListRepo.updateWatchlist(watchList)
     }
 
-    fun refreshWatchList() = viewModelScope.launch(errorHandler) {
+    fun refreshWatchList() = viewModelScope.launch(dbErrorHandler) {
         currentWatchlist.postValue(currentWatchlist.value)
     }
 
-    fun deleteWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
+    fun deleteWatchList(watchList: WatchList) = viewModelScope.launch(dbErrorHandler) {
         watchListRepo.removeWatchlist(watchList)
         if (watchList.name == currentWatchlist.value?.name) {
             val allWatchLists = watchListRepo.getAllWatchListsSync()
@@ -64,17 +61,17 @@ class MainViewModel(
         }
     }
 
-    fun removeSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
+    fun removeSymbol(symbol: Symbol) = viewModelScope.launch(dbErrorHandler) {
         quoteRepo.deleteQuote(symbol)
     }
 
-    fun addSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
+    fun addSymbol(symbol: Symbol) = viewModelScope.launch(dbErrorHandler) {
         quoteRepo.insertQuote(symbol)
     }
 
     suspend fun fetchQuoteData(symbol: String) = stockRepo.fetchQuote(symbol)
 
-    fun searchSymbol(symbol: String) = viewModelScope.launch(errorHandler) {
+    fun searchSymbol(symbol: String) = viewModelScope.launch(networkErrorHandler) {
         val result = symbolRepo.fetchSymbols(symbol)
         symbolsForAutofill.postValue(result)
     }
@@ -91,11 +88,11 @@ class MainViewModel(
         return result
     }
 
-    private fun fulfillWatchlistData() = viewModelScope.launch(errorHandler) {
+    private fun fetchWatchlistData() = viewModelScope.launch(dbErrorHandler) {
         watchListRepo.getAllWatchLists().collect { watchList = it }
     }
 
-    private fun fulfillDBInitialData() = viewModelScope.launch(errorHandler) {
+    private fun fulfillDBInitialData() = viewModelScope.launch(dbErrorHandler) {
         val allWatchLists = watchListRepo.getAllWatchListsSync()
         if (allWatchLists.isEmpty()) {
             val defaultWatchList = WatchList("My first list")
@@ -115,22 +112,5 @@ class MainViewModel(
         val symbol = Symbol(0, name, true, watchlistId)
         val id = quoteRepo.insertQuote(symbol)
         symbol.id = id
-    }
-}
-
-class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-
-    private val appDatabase: AppDatabase by lazy {
-        AppDatabase.getDatabase(context)
-    }
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MainViewModel(
-            StockSimulationRepositoryImpl(),
-//            StockRepositoryImpl(stockRetrofit.service), // IEX surprisingly stopped working for free on June 1
-            WatchListRepositoryDBImpl(appDatabase.watchListDao()),
-            SymbolRepositoryImpl(symbolRetrofit.service),
-            QuoteRepositoryImpl(appDatabase.quoteDao())
-        ) as T
     }
 }

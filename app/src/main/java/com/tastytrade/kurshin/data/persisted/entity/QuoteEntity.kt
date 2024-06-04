@@ -2,10 +2,12 @@ package com.tastytrade.kurshin.data.persisted.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "quotes",
+    indices = [Index(value = ["watchlistId"])],
     foreignKeys = [ForeignKey(
         entity = WatchListEntity::class,
         parentColumns = ["id"],
