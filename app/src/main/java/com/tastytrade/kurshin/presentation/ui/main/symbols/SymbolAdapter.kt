@@ -83,7 +83,7 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val onSymbolSe
         return symbols.size
     }
 
-    fun getAllSymbolNames() = symbols.map { it.name }
+    fun getAllSymbolNames() = selectedSymbols.map { it.name }
 
     @SuppressLint("NotifyDataSetChanged")
     fun setSymbols(symbolList: List<Symbol>) {

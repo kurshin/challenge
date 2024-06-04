@@ -111,6 +111,7 @@ class MainFragment : Fragment() {
     private fun updateSymbolsAdapter(watchlist: WatchList) {
         viewModel.getSymbolsForWatchlist(watchlist).observe(viewLifecycleOwner) { quotes ->
             symbolAdapter.updateSymbols(quotes)
+            fetchPrices()
             updateEmptyDataMessage()
         }
     }
@@ -159,6 +160,13 @@ class MainFragment : Fragment() {
                 fetchAndUpdatePrices()
                 delay(REFRESH_DELAY_MILLIS)
             }
+        }
+    }
+
+    private fun fetchPrices() {
+        lifecycleScope.launch(Dispatchers.IO + viewModel.networkErrorHandler) {
+            fetchAndUpdatePrices()
+            delay(REFRESH_DELAY_MILLIS)
         }
     }
 

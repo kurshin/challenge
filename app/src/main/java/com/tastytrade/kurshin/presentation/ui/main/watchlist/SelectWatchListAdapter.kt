@@ -64,8 +64,4 @@ class SelectWatchListAdapter(
             }
         }
     }
-
-    companion object {
-        private const val NOT_SELECTED = -1
-    }
 }
