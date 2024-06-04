@@ -18,14 +18,11 @@ data class Symbol(
         other as Symbol
 
         if (name != other.name) return false
-        if (watchListId != other.watchListId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + watchListId.hashCode()
-        return result
+        return name.hashCode()
     }
 }

@@ -24,4 +24,5 @@
     <string name="last">Last:</string>
     <string name="last_">Last: %s$</string>
     <string name="loading">Loading..</string>
+    <string name="no_watchlists">Create Watchlist</string>
 </resources>

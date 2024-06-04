@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +20,6 @@ import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.presentation.ui.chart.ChartFragment
 import com.tastytrade.kurshin.presentation.ui.main.symbols.NewSymbolAdapter
-import com.tastytrade.kurshin.presentation.ui.main.symbols.SymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -89,8 +87,13 @@ class MainFragment : Fragment() {
 
     private fun setUpWatchlistSelector() {
         viewModel.currentWatchlist.observe(viewLifecycleOwner) { watchlist ->
-            binding.tvSelectedWatchList.text = watchlist.name
-            updateSymbolsAdapter(watchlist)
+            if (watchlist == null) {
+                binding.tvSelectedWatchList.text = getString(R.string.no_watchlists)
+                symbolAdapter.updateSymbols(emptyList())
+            } else {
+                binding.tvSelectedWatchList.text = watchlist.name
+                updateSymbolsAdapter(watchlist)
+            }
         }
 
         binding.clWatchListSelector.setOnClickListener {

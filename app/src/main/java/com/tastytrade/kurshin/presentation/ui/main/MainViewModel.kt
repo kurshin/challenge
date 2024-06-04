@@ -12,7 +12,6 @@ import com.tastytrade.kurshin.data.persisted.WatchListRepositoryDBImpl
 import com.tastytrade.kurshin.data.remote.stock.StockSimulationRepositoryImpl
 import com.tastytrade.kurshin.data.remote.symbol.SymbolRepositoryImpl
 import com.tastytrade.kurshin.data.remote.symbolRetrofit
-import com.tastytrade.kurshin.domain.DEFAULT_WATCHLIST
 import com.tastytrade.kurshin.domain.Symbol
 import com.tastytrade.kurshin.domain.WatchList
 import com.tastytrade.kurshin.domain.irepository.IQuoteRepository
@@ -29,10 +28,7 @@ class MainViewModel(
     private val quoteRepo: IQuoteRepository,
 ) : ViewModel() {
 
-    val currentWatchlist = MutableLiveData(DEFAULT_WATCHLIST)
-    var selectedSymbols:List<Symbol> = emptyList()
-    var selectedSymbolsFlow = quoteRepo.getAllQuotes()
-
+    val currentWatchlist = MutableLiveData<WatchList?>()
     val error = MutableLiveData<String>()
     val symbolsForAutofill = MutableLiveData<List<Symbol>>()
     var watchList: List<WatchList> = emptyList()
@@ -43,7 +39,6 @@ class MainViewModel(
 
     init {
         fulfillWatchlistData()
-        fulfillQuotesData()
         fulfillDBInitialData()
     }
 
@@ -62,10 +57,11 @@ class MainViewModel(
     }
 
     fun deleteWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
-        if (watchList.name == currentWatchlist.value?.name) {
-            currentWatchlist.postValue(DEFAULT_WATCHLIST)
-        }
         watchListRepo.removeWatchlist(watchList)
+        if (watchList.name == currentWatchlist.value?.name) {
+            val allWatchLists = watchListRepo.getAllWatchListsSync()
+            currentWatchlist.postValue(allWatchLists.firstOrNull())
+        }
     }
 
     fun removeSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
@@ -99,16 +95,9 @@ class MainViewModel(
         watchListRepo.getAllWatchLists().collect { watchList = it }
     }
 
-    private fun fulfillQuotesData() = viewModelScope.launch(errorHandler) {
-        quoteRepo.getAllQuotes().collect { selectedSymbols = it }
-    }
-
     private fun fulfillDBInitialData() = viewModelScope.launch(errorHandler) {
         val allWatchLists = watchListRepo.getAllWatchListsSync()
         if (allWatchLists.isEmpty()) {
-            val idDefault = watchListRepo.addWatchlist(DEFAULT_WATCHLIST)
-            DEFAULT_WATCHLIST.id = idDefault
-
             val defaultWatchList = WatchList("My first list")
             val id = watchListRepo.addWatchlist(defaultWatchList)
             defaultWatchList.id = id
@@ -116,12 +105,9 @@ class MainViewModel(
             insertSymbol("AAPL", id)
             insertSymbol("GOOG", id)
             insertSymbol("MSFT", id)
-
             currentWatchlist.postValue(defaultWatchList)
         } else {
-            val defaultWatchlist = allWatchLists.first { it.isDefault }
-            currentWatchlist.postValue(defaultWatchlist)
-            DEFAULT_WATCHLIST.id = defaultWatchlist.id
+            currentWatchlist.postValue(allWatchLists.firstOrNull())
         }
     }
 

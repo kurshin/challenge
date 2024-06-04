@@ -1,6 +1,7 @@
 package com.tastytrade.kurshin.presentation.ui.main.symbols
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,7 +109,7 @@ class NewSymbolAdapter(private val viewModel: MainViewModel, private val onSymbo
             symbols = newSymbols.toMutableList()
             selectedSymbols = newSymbols.filter { it.isChecked }.toMutableList()
         } else {
-            symbols = symbolsToSet.toMutableList().onEach { it.isChecked = true }
+            symbols = symbolsToSet.sortedBy { it.name }.toMutableList().onEach { it.isChecked = true }
             selectedSymbols = symbolsToSet.toMutableList()
         }
 
