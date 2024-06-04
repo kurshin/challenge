@@ -22,7 +22,7 @@ interface QuoteDao {
     suspend fun getQuotesForWatchlist(watchlistId: Long): List<QuoteEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertQuote(quote: QuoteEntity)
+    suspend fun insertQuote(quote: QuoteEntity): Long
 
     @Update
     suspend fun updateQuote(quote: QuoteEntity)

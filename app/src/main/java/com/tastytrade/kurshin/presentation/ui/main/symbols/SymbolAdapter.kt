@@ -45,11 +45,11 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val selectItem
                 if (symbol.isChecked) {
                     if (!selectedSymbols.contains(symbol)) {
                         symbol.apply { watchListId = currentWatchList.id }
-//                        selectedSymbols.add(symbol)
+                        selectedSymbols.add(symbol)
                         viewModel.addSymbol(symbol)
                     }
                 } else {
-//                    selectedSymbols.remove(symbol)
+                    selectedSymbols.remove(symbol)
                     viewModel.removeSymbol(symbol)
                 }
             }

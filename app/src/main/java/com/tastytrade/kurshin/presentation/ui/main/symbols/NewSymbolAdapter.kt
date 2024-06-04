@@ -1,7 +1,6 @@
 package com.tastytrade.kurshin.presentation.ui.main.symbols
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,8 +39,13 @@ class NewSymbolAdapter(private val viewModel: MainViewModel, private val onSymbo
             checkBoxSymbol.setOnClickListener {
                 symbol.isChecked = (it as CheckBox).isChecked
                 if (symbol.isChecked) {
-                    viewModel.addSymbol(symbol.apply { watchListId = viewModel.currentWatchlist.value?.id ?: 0 })
+                    if (!selectedSymbols.contains(symbol)) {
+                        symbol.apply { watchListId = viewModel.currentWatchlist.value?.id ?: 0 }
+                        selectedSymbols.add(symbol)
+                        viewModel.addSymbol(symbol)
+                    }
                 } else {
+                    selectedSymbols.remove(symbol)
                     viewModel.removeSymbol(symbol)
                 }
             }
@@ -81,19 +85,33 @@ class NewSymbolAdapter(private val viewModel: MainViewModel, private val onSymbo
 
     fun getAllSymbolNames() = symbols.map { it.name }
 
-    fun setSymbols(newSymbols: List<Symbol>) {
-        symbols = (newSymbols.map {
+    @SuppressLint("NotifyDataSetChanged")
+    fun setSymbols(symbolList: List<Symbol>) {
+        val newSymbols = symbolList.map {
             if (selectedSymbols.contains(it)) it.apply { isChecked = true } else it
-        } + selectedSymbols.filterNot { newSymbols.contains(it) }).toMutableList()
+        } + selectedSymbols.filterNot { symbolList.contains(it) }
 
         selectedSymbols.clear()
-        selectedSymbols.addAll(symbols.filter { it.isChecked })
+        selectedSymbols.addAll(newSymbols.filter { it.isChecked })
+
+        symbols = newSymbols.toMutableList()
         notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateSymbols(newSymbols: List<Symbol>) {
-        symbols = newSymbols.toMutableList()
+    fun updateSymbols(symbolsToSet: List<Symbol>) {
+        if (isEditMode) {
+            val newSymbols = symbols.map {
+                if (symbolsToSet.contains(it)) it.apply { isChecked = true } else it.apply { isChecked = false }
+            } + symbolsToSet.filterNot { symbols.contains(it) }.map { it.apply { isChecked = false } }
+
+            symbols = newSymbols.toMutableList()
+            selectedSymbols = newSymbols.filter { it.isChecked }.toMutableList()
+        } else {
+            symbols = symbolsToSet.toMutableList().onEach { it.isChecked = true }
+            selectedSymbols = symbolsToSet.toMutableList()
+        }
+
         notifyDataSetChanged()
     }
 

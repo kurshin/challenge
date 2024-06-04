@@ -15,6 +15,7 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         return quoteDao.getAllQuotes().map {
             it.map { quote ->
                 Symbol(
+                    id = quote.id,
                     name = quote.name,
                     lastPrice = quote.lastPrice,
                     askPrice = quote.askPrice,
@@ -28,6 +29,7 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
     override suspend fun getAllQuotesSync(): List<Symbol> {
         return quoteDao.getAllQuotesSync().map { quote ->
             Symbol(
+                id = quote.id,
                 name = quote.name,
                 lastPrice = quote.lastPrice,
                 askPrice = quote.askPrice,
@@ -41,6 +43,7 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         return withContext(Dispatchers.IO) {
             quoteDao.getQuotesForWatchlist(watchlistId).map {
                 Symbol(
+                    id = it.id,
                     name = it.name,
                     lastPrice = it.lastPrice,
                     askPrice = it.askPrice,
@@ -51,10 +54,11 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         }
     }
 
-    override suspend fun insertQuote(symbol: Symbol) {
-        withContext(Dispatchers.IO) {
+    override suspend fun insertQuote(symbol: Symbol): Long {
+        return withContext(Dispatchers.IO) {
             quoteDao.insertQuote(
                 QuoteEntity(
+                    symbol.id,
                     symbol.name,
                     symbol.watchListId,
                     symbol.lastPrice,
@@ -69,6 +73,7 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
         withContext(Dispatchers.IO) {
             quoteDao.deleteQuote(
                 QuoteEntity(
+                    symbol.id,
                     symbol.name,
                     symbol.watchListId,
                     symbol.lastPrice,
@@ -78,5 +83,4 @@ class QuoteRepositoryImpl(private val quoteDao: QuoteDao) : IQuoteRepository {
             )
         }
     }
-
 }

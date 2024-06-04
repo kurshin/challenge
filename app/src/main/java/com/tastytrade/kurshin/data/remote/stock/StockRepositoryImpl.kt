@@ -12,6 +12,7 @@ class StockRepositoryImpl(private val stockService: StockService) : IStockReposi
         return withContext(Dispatchers.IO) {
             val quoteDto = stockService.fetchQuote(symbol).quote
             Symbol(
+                0,
                 quoteDto.symbol,
                 false,
                 0,

@@ -1,8 +1,6 @@
 package com.tastytrade.kurshin.presentation.ui.main
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -41,7 +39,6 @@ class MainViewModel(
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
         error.postValue(exception.message)
-        Log.i("1111", "error = $exception.message")
     }
 
     init {
@@ -51,8 +48,8 @@ class MainViewModel(
     }
 
     fun addWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
-        watchListRepo.addWatchlist(watchList)
-        currentWatchlist.postValue(watchList)
+        val id = watchListRepo.addWatchlist(watchList)
+        currentWatchlist.postValue(watchList.apply { watchList.id = id })
     }
 
     fun updateWatchList(watchList: WatchList) = viewModelScope.launch(errorHandler) {
@@ -73,7 +70,6 @@ class MainViewModel(
 
     fun removeSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
         quoteRepo.deleteQuote(symbol)
-//        currentWatchlist.postValue(currentWatchlist.value)
     }
 
     fun addSymbol(symbol: Symbol) = viewModelScope.launch(errorHandler) {
@@ -110,20 +106,29 @@ class MainViewModel(
     private fun fulfillDBInitialData() = viewModelScope.launch(errorHandler) {
         val allWatchLists = watchListRepo.getAllWatchListsSync()
         if (allWatchLists.isEmpty()) {
-            watchListRepo.addWatchlist(DEFAULT_WATCHLIST)
+            val idDefault = watchListRepo.addWatchlist(DEFAULT_WATCHLIST)
+            DEFAULT_WATCHLIST.id = idDefault
 
             val defaultWatchList = WatchList("My first list")
             val id = watchListRepo.addWatchlist(defaultWatchList)
             defaultWatchList.id = id
-            quoteRepo.insertQuote(Symbol("AAPL", true, id))
-            quoteRepo.insertQuote(Symbol("GOOG", true, id))
-            quoteRepo.insertQuote(Symbol("MSFT", true, id))
+
+            insertSymbol("AAPL", id)
+            insertSymbol("GOOG", id)
+            insertSymbol("MSFT", id)
 
             currentWatchlist.postValue(defaultWatchList)
         } else {
             val defaultWatchlist = allWatchLists.first { it.isDefault }
             currentWatchlist.postValue(defaultWatchlist)
+            DEFAULT_WATCHLIST.id = defaultWatchlist.id
         }
+    }
+
+    private suspend fun insertSymbol(name: String, watchlistId: Long) {
+        val symbol = Symbol(0, name, true, watchlistId)
+        val id = quoteRepo.insertQuote(symbol)
+        symbol.id = id
     }
 }
 
@@ -142,8 +147,4 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             QuoteRepositoryImpl(appDatabase.quoteDao())
         ) as T
     }
-}
-
-fun Context.getTastyTradeSharedPrefs(): SharedPreferences {
-    return getSharedPreferences("tastytrade_prefs", Context.MODE_PRIVATE)
 }

@@ -21,6 +21,7 @@ class StockSimulationRepositoryImpl : IStockRepository {
         return withContext(Dispatchers.IO) {
             delay(NETWORK_SIMULATED_DELAY_quick)
             Symbol(
+                0,
                 symbol,
                 false,
                 0,

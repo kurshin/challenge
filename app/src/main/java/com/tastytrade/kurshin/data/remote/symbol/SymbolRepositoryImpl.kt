@@ -9,7 +9,7 @@ class SymbolRepositoryImpl(private val symbolService: SymbolService) : ISymbolRe
 
     override suspend fun fetchSymbols(symbol: String): List<Symbol> {
         return withContext(Dispatchers.IO) {
-            symbolService.fetchSymbols(symbol).data.items.map { Symbol(it.symbol) }
+            symbolService.fetchSymbols(symbol).data.items.map { Symbol(0, it.symbol) }
         }
     }
 }
