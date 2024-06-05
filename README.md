@@ -21,6 +21,10 @@ Otherwise, just run the application and observe randomized prices and charts.<br
 The unit tests can be found under the "com.tastytrade.kurshin" package marked as "(test)".<br/><br/>
 Feel free to run the whole package with coverage in AS and enjoy the numbers.<br/><br/><br/>
 
+### UI Tests
+The UI tests can be found under the "com.tastytrade.kurshin.presentation" package marked as "(androidTest)".<br/><br/>
+You will need a device or simulator to run those. Unlike unit tests, UI tests are provided more as examples rather than for actual use. This is because the UI is more like a sketch in this case. For a commercial application, these tests can be expanded and supplemented.<br/><br/><br/>
+
 ### Theming
 The application supports a native night mode switch. To observe it in action, simply turn on/off the dark mode in the settings of your device (usually accessible from the quick settings top bar).<br/><br/><br/>
 
