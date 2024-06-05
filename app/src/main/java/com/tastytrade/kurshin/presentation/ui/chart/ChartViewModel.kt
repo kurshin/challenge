@@ -18,7 +18,7 @@ class ChartViewModel @Inject constructor(private val stockRepo: IStockRepository
     val quote = MutableLiveData<Symbol>()
     val error = MutableLiveData<String>()
 
-    suspend fun getQuoteDataRepeatedly(symbol: String) {
+    suspend fun fetchQuoteData(symbol: String) {
         val result = stockRepo.fetchQuote(symbol)
         quote.postValue(result)
     }
@@ -28,7 +28,7 @@ class ChartViewModel @Inject constructor(private val stockRepo: IStockRepository
         chart.postValue(result)
     }
 
-    val errorHandler = CoroutineExceptionHandler { _, exception ->
+    var errorHandler = CoroutineExceptionHandler { _, exception ->
         error.postValue(exception.message)
     }
 }

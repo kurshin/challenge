@@ -28,7 +28,7 @@ class MainViewModel @Inject constructor(
     val symbolsForAutofill = MutableLiveData<List<Symbol>>()
     var watchList: List<WatchList> = emptyList()
 
-    val networkErrorHandler = CoroutineExceptionHandler { _, exception ->
+    var networkErrorHandler = CoroutineExceptionHandler { _, exception ->
         error.postValue(exception)
     }
 
@@ -88,11 +88,11 @@ class MainViewModel @Inject constructor(
         return result
     }
 
-    private fun fetchWatchlistData() = viewModelScope.launch(dbErrorHandler) {
+    internal fun fetchWatchlistData() = viewModelScope.launch(dbErrorHandler) {
         watchListRepo.getAllWatchLists().collect { watchList = it }
     }
 
-    private fun fulfillDBInitialData() = viewModelScope.launch(dbErrorHandler) {
+    internal fun fulfillDBInitialData() = viewModelScope.launch(dbErrorHandler) {
         val allWatchLists = watchListRepo.getAllWatchListsSync()
         if (allWatchLists.isEmpty()) {
             val defaultWatchList = WatchList("My first list")

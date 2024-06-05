@@ -70,8 +70,8 @@ class ChartFragment : Fragment() {
     private fun startPriceRefresh() {
         lifecycleScope.launch(Dispatchers.IO + viewModel.errorHandler) {
             while (isActive) {
-                viewModel.getQuoteDataRepeatedly(symbol.name)
-                delay(5000)
+                viewModel.fetchQuoteData(symbol.name)
+                delay(REFRESH_DELAY_MILLIS)
             }
         }
     }
@@ -97,5 +97,7 @@ class ChartFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+
+        private const val REFRESH_DELAY_MILLIS = 5000L
     }
 }

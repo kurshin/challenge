@@ -23,6 +23,7 @@ import com.tastytrade.kurshin.presentation.ui.main.symbols.SymbolAdapter
 import com.tastytrade.kurshin.presentation.ui.main.watchlist.SelectWatchListDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ import java.net.UnknownHostException
 class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
+    private var priceRefreshJob: Job? = null
 
     private val symbolAdapter: SymbolAdapter by lazy {
         SymbolAdapter(viewModel) { symbolSelected -> openChartFragment(symbolSelected) }
@@ -63,8 +65,16 @@ class MainFragment : Fragment() {
         setUpSearch()
         setUpSymbolAdapter()
         setUpWatchlistSelector()
+    }
 
+    override fun onResume() {
+        super.onResume()
         startPriceRefresh()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopPriceRefresh()
     }
 
     private fun setUpSearch() {
@@ -155,7 +165,11 @@ class MainFragment : Fragment() {
     }
 
     private fun startPriceRefresh() {
-        lifecycleScope.launch(Dispatchers.IO + viewModel.networkErrorHandler) {
+        if (priceRefreshJob?.isActive == true) {
+            return
+        }
+
+        priceRefreshJob = lifecycleScope.launch(Dispatchers.IO + viewModel.networkErrorHandler) {
             while (isActive) {
                 fetchAndUpdatePrices()
                 delay(REFRESH_DELAY_MILLIS)
@@ -166,8 +180,12 @@ class MainFragment : Fragment() {
     private fun fetchPrices() {
         lifecycleScope.launch(Dispatchers.IO + viewModel.networkErrorHandler) {
             fetchAndUpdatePrices()
-            delay(REFRESH_DELAY_MILLIS)
         }
+    }
+
+    private fun stopPriceRefresh() {
+        priceRefreshJob?.cancel()
+        priceRefreshJob = null
     }
 
     private suspend fun fetchAndUpdatePrices() {

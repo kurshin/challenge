@@ -39,7 +39,7 @@ class StockSimulationRepositoryImpl : IStockRepository {
         }
     }
 
-    private fun generateQuotes(symbol: String): List<Chart> {
+    internal fun generateQuotes(symbol: String): List<Chart> {
         val dateFormatter = DateTimeFormatter.ofPattern("dd-MM")
         return (0 until CHART_PERIOD_DAYS).map { daysAgo ->
             val date = LocalDate.now().minusDays(daysAgo.toLong()).format(dateFormatter)
@@ -54,7 +54,7 @@ class StockSimulationRepositoryImpl : IStockRepository {
         }.reversed()
     }
 
-    private fun randomDoubleInRange(): Double {
+    internal fun randomDoubleInRange(): Double {
         return Random.nextDouble(0.0, 100.0).takeIf { it > 0.0 } ?: 1.0
     }
 }
