@@ -12,8 +12,8 @@ Justification:
 
 ### Implementation Details
 #### Security and Configuration
-* Api endpoints are placed on build.gradle.kts of app level. Different environments (development, staging, production) often require different API endpoints. By defining API hosts in build.gradle.kts, one can easily switch between these environments without changing the source code.
-* Hardcoding the API key directly in the source code poses a security risk. If the code is pushed to a public repository or shared, the API key could be exposed. Thus, the apiKey property was definet in local.properties. 
+* Api endpoints are placed on build.gradle.kts of app level. Different environments (development, staging, production) often require different API endpoints. By defining API hosts in build.gradle.kts, we can easily switch between these environments without changing the source code.
+* Hardcoding the API key directly in the source code poses a security risk. If the code is pushed to a public repository or shared, the API key could be exposed. Thus, the apiKey property was defined in local.properties. 
 
 #### Dependency Injection with Hilt
 Justification:
