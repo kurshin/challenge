@@ -10,7 +10,7 @@
 sdk.dir=some_path<br/>
 apiKey=pk_your_key<br/><br/>
 6. Press Try Again to sync the project with the Gradle files.<br/><br/>
-7. WWhen the Gradle sync is finished, you will be able to run the application either on a simulator or on a real device.<br/><br/><br/>
+7. When the Gradle sync is finished, you will be able to run the application either on a simulator or on a real device.<br/><br/><br/>
 
 ### Notice regarding IEX Cloud API
 Although the project requires an apiKey setup for successful compilation, it is configured to use an offline response generator by default (StockSimulationRepositoryImpl). This is because IEX suddenly stopped offering free access on June 1st. The free trial was canceled, and new subscriptions were no longer allowed. Since all HTTP requests were ready and tested by this time, I decided to simulate server responses with some delays and move forward. <br/><br/>
