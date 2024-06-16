@@ -88,7 +88,19 @@ class SymbolAdapter(private val viewModel: MainViewModel, private val onSymbolSe
     @SuppressLint("NotifyDataSetChanged")
     fun setSymbols(symbolList: List<Symbol>) {
         val newSymbols = symbolList.map {
-            if (selectedSymbols.contains(it)) it.apply { isChecked = true } else it
+            val indexOf = selectedSymbols.indexOf(it)
+            if (indexOf != -1) {
+                it.apply {
+                    isChecked = true
+                    id = selectedSymbols[indexOf].id
+                }
+            } else {
+                it.apply {
+                    isChecked = false
+                    id = 0
+                }
+            }
+            it
         } + selectedSymbols.filterNot { symbolList.contains(it) }
 
         selectedSymbols.clear()
